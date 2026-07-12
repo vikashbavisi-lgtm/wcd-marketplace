@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCD — Visual Marketplace Prototype</title>
+<style>
+  /* ============================================================
+     WCD Visual Marketplace — design system v2 (2026-07-18)
+     Exaggerated-minimalism direction: oversized editorial type,
+     generous whitespace, hairline borders, layered soft shadows.
+     Brand: Emerald + Sand. System fonts only (offline demos).
+     ============================================================ */
+  :root{
+    --em-950:#022A1B;
+    --em-900:#043D2B;
+    --em-700:#065F46;
+    --em-500:#0E7A54;
+    --em-300:#5FA98C;
+    --em-100:#DCEBE3;
+    --em-50:#EEF5F1;
+    --sand-50:#FAF7F0;
+    --sand-100:#F4EEE1;
+    --sand-200:#EADFC9;
+    --sand-300:#DCCCA9;
+    --sand-500:#B39E74;
+    --ink:#1F2B25;
+    --ink-soft:#5C6B63;
+    --card:#FFFFFF;
+    --r-sm:10px;
+    --radius:18px;
+    --r-lg:24px;
+    --shadow-xs:0 1px 2px rgba(2,42,27,.05);
+    --shadow:0 1px 2px rgba(2,42,27,.04),0 10px 28px -10px rgba(2,42,27,.12);
+    --shadow-hover:0 2px 6px rgba(2,42,27,.07),0 26px 52px -16px rgba(2,42,27,.28);
+    --ease:cubic-bezier(.22,.61,.21,1);
+    --spring:cubic-bezier(.2,.9,.25,1.12);
+    --font-serif:"New York","Iowan Old Style",Palatino,"Palatino Linotype",Georgia,serif;
+    --font-sans:"Avenir Next","SF Pro Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--font-sans);
+    background:var(--sand-50);color:var(--ink);line-height:1.55;
+    font-size:15.5px;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{font-family:var(--font-serif);font-weight:600;letter-spacing:-.01em}
+  img{display:block;max-width:100%}
+  button{font:inherit;cursor:pointer;border:none;background:none;color:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  button:active{transform:scale(.975)}
+  a{-webkit-tap-highlight-color:transparent}
+  :focus-visible{outline:2.5px solid var(--em-500);outline-offset:2px;border-radius:4px}
+  ::selection{background:var(--em-100)}
+
+  /* thin sand scrollbars for inner scroll regions */
+  .scrolly::-webkit-scrollbar,.pmodal-panel::-webkit-scrollbar{width:7px}
+  .scrolly::-webkit-scrollbar-thumb,.pmodal-panel::-webkit-scrollbar-thumb{background:var(--sand-300);border-radius:99px}
+  .scrolly::-webkit-scrollbar-track,.pmodal-panel::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- NAV ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,247,240,.86);
+    backdrop-filter:blur(14px) saturate(1.6);-webkit-backdrop-filter:blur(14px) saturate(1.6);
+    border-bottom:1px solid var(--sand-200);
+  }
+  .topbar-inner{
+    max-width:1320px;margin:0 auto;padding:12px 24px;
+    display:flex;align-items:center;gap:18px;
+  }
+  .logo{display:flex;align-items:baseline;gap:9px;text-decoration:none;color:var(--em-900)}
+  .logo .mark{
+    background:var(--em-900);color:var(--sand-100);font-weight:700;
+    padding:6px 11px;border-radius:10px;letter-spacing:.05em;font-size:17px;
+    box-shadow:var(--shadow-xs);
+  }
+  .logo .tag{font-size:10.5px;color:var(--ink-soft);letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+  .frame-tabs{display:flex;gap:2px;margin-left:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:3px;background:var(--sand-100);border-radius:999px;border:1px solid var(--sand-200)}
+  .frame-tabs button{
+    padding:8px 16px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--ink-soft);
+    white-space:nowrap;transition:color .2s var(--ease),background .2s var(--ease),box-shadow .2s var(--ease);
+    min-height:36px;
+  }
+  .frame-tabs button:hover{color:var(--em-900)}
+  .frame-tabs button.active{background:var(--em-900);color:#fff;box-shadow:0 3px 10px rgba(4,61,43,.28)}
+  .quote-btn{
+    position:relative;display:flex;align-items:center;gap:8px;
+    background:#fff;border:1px solid var(--sand-200);
+    padding:9px 15px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--em-900);
+    transition:border-color .2s,box-shadow .2s,background .2s;box-shadow:var(--shadow-xs);
+    min-height:40px;
+  }
+  .quote-btn:hover{border-color:var(--em-300);box-shadow:var(--shadow)}
+  .quote-count{
+    background:var(--em-500);color:#fff;font-size:11.5px;font-weight:800;
+    min-width:20px;height:20px;border-radius:999px;
+    display:flex;align-items:center;justify-content:center;padding:0 6px;
+    transition:transform .22s var(--spring);
+  }
+  .quote-count.bump{transform:scale(1.4)}
+
+  .frame{display:none;animation:frameIn .38s var(--ease)}
+  .frame.active{display:block}
+  @keyframes frameIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 24px}
+  .boot-error{
+    display:none;max-width:680px;margin:60px auto;background:#fff;border:1px solid var(--sand-200);
+    border-radius:var(--r-lg);padding:30px;text-align:center;color:var(--ink-soft);box-shadow:var(--shadow);
+  }
+  .boot-error b{display:block;color:var(--em-900);font-size:18px;margin-bottom:8px}
+  .updated-note{font-size:12.5px;color:var(--em-300)}
+
+  /* ---------- PRODUCT CARD (shared) ---------- */
+  .pgrid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));
+    gap:22px;
+  }
+  .pcard{
+    background:var(--card);border-radius:var(--radius);overflow:hidden;
+    border:1px solid var(--sand-200);box-shadow:var(--shadow-xs);
+    transition:transform .28s var(--ease),box-shadow .28s var(--ease),border-color .28s var(--ease);
+    position:relative;cursor:pointer;animation:fadeIn .4s var(--ease) backwards;
+  }
+  .pcard:hover{transform:translateY(-5px);box-shadow:var(--shadow-hover);border-color:transparent;z-index:5}
+  .pcard .imgbox{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--sand-100)}
+  .pcard .imgbox img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease),opacity .35s var(--ease)}
+  .pcard:hover .imgbox img.main{transform:scale(1.08)}
+  .pcard .imgbox img.alt{position:absolute;inset:0;opacity:0}
+  .pcard:hover .imgbox img.alt{opacity:1;transform:scale(1.04)}
+  .pcard .tags{
+    position:absolute;left:10px;right:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px;
+    opacity:0;transform:translateY(8px);transition:opacity .28s var(--ease),transform .28s var(--ease);pointer-events:none;
+  }
+  .pcard:hover .tags{opacity:1;transform:none}
+  .chip{
+    background:rgba(2,42,27,.85);color:#fff;font-size:11px;font-weight:600;
+    padding:4px 10px;border-radius:999px;backdrop-filter:blur(4px);letter-spacing:.02em;
+  }
+  .chip.sand{background:rgba(250,247,240,.94);color:var(--em-900)}
+  .quick-add{
+    position:absolute;top:10px;right:10px;
+    background:rgba(255,255,255,.96);color:var(--em-900);font-weight:700;font-size:12.5px;
+    padding:9px 14px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.18);
+    opacity:0;transform:translateY(-8px);transition:all .26s var(--ease);
+    backdrop-filter:blur(4px);min-height:36px;
+  }
+  .pcard:hover .quick-add{opacity:1;transform:none}
+  .quick-add:hover{background:var(--em-900);color:#fff}
+  .sim-badge{
+    position:absolute;top:10px;left:10px;background:var(--em-500);color:#fff;
+    font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;
+    box-shadow:0 3px 10px rgba(4,61,43,.3);
+  }
+  .pinfo{padding:13px 15px 15px}
+  .pinfo .name{font-weight:700;font-size:14.5px;word-break:break-word;letter-spacing:.01em}
+  .pinfo .meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+  .prow{display:flex;justify-content:space-between;align-items:center;margin-top:9px;gap:8px}
+  .stock{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
+  .stock.ok{background:var(--em-100);color:var(--em-700)}
+  .stock.low{background:#FBEFD9;color:#8A6116}
+  .stock.out{background:#F6E3E0;color:#9C3B2E}
+  .load-more{
+    display:block;margin:36px auto 0;background:var(--em-900);color:#fff;font-weight:700;
+    padding:15px 40px;border-radius:999px;transition:background .2s,box-shadow .2s;
+    box-shadow:0 8px 24px -8px rgba(4,61,43,.4);min-height:48px;
+  }
+  .load-more:hover{background:var(--em-700);box-shadow:0 12px 30px -8px rgba(4,61,43,.5)}
+
+  /* ---------- FRAME 1 : HOME ---------- */
+  .hero{
+    background:
+      radial-gradient(760px 420px at 88% -10%,rgba(95,169,140,.22),transparent 60%),
+      radial-gradient(520px 380px at -6% 110%,rgba(220,204,169,.14),transparent 60%),
+      linear-gradient(160deg,var(--em-950) 0%,var(--em-900) 58%,#054C36 100%);
+    color:var(--sand-50);padding:76px 0 96px;position:relative;overflow:hidden;
+  }
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;position:relative}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:11.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--em-300);margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:26px;height:1.5px;background:var(--em-300);display:inline-block}
+  .hero h1{font-size:clamp(38px,5.4vw,68px);line-height:1.06;font-weight:600;letter-spacing:-.02em}
+  .hero h1 em{font-style:italic;color:var(--sand-300)}
+  .hero p.sub{margin-top:20px;font-size:16.5px;color:var(--em-100);max-width:47ch;line-height:1.65}
+  .searchbar{
+    margin-top:30px;display:flex;background:#fff;border-radius:999px;padding:7px;
+    box-shadow:0 18px 50px rgba(0,0,0,.32);transition:box-shadow .25s var(--ease),transform .25s var(--ease);
+  }
+  .searchbar:focus-within{box-shadow:0 18px 50px rgba(0,0,0,.32),0 0 0 4px rgba(95,169,140,.4);transform:translateY(-1px)}
+  .searchbar input{
+    flex:1;border:none;outline:none;font-size:16px;padding:12px 20px;color:var(--ink);
+    background:transparent;min-width:0;
+  }
+  .searchbar input::placeholder{color:#9AA8A0}
+  .searchbar button{
+    background:var(--em-500);color:#fff;font-weight:700;font-size:15px;
+    padding:12px 26px;border-radius:999px;transition:background .2s;display:flex;align-items:center;gap:8px;
+    min-height:48px;
+  }
+  .searchbar button:hover{background:var(--em-700)}
+  .search-hints{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .search-hints span{font-size:12.5px;color:var(--em-300);font-weight:600;letter-spacing:.04em}
+  .hint-chip{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(244,238,225,.1);border:1px solid rgba(244,238,225,.26);color:var(--sand-100);
+    font-size:13px;font-weight:600;padding:8px 15px;border-radius:999px;transition:all .2s var(--ease);
+    min-height:36px;
+  }
+  .hint-chip:hover{background:var(--sand-100);color:var(--em-900);border-color:var(--sand-100)}
+  .hero-stats{display:flex;gap:0;margin-top:40px;align-items:stretch;flex-wrap:wrap}
+  .hero-stats > div{padding:2px 26px;border-left:1px solid rgba(220,235,227,.22)}
+  .hero-stats > div:first-child{padding-left:0;border-left:none}
+  .hero-stats b{display:block;font-size:27px;font-family:var(--font-serif);font-variant-numeric:tabular-nums;line-height:1.15}
+  .hero-stats span{font-size:11px;color:var(--em-300);text-transform:uppercase;letter-spacing:.12em;font-weight:600}
+  .hero-stats .updated-note{align-self:center;padding-left:26px}
+
+  .hero-mosaic{
+    display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:100px;gap:13px;
+  }
+  .hero-mosaic .tile{
+    border-radius:16px;overflow:hidden;position:relative;cursor:pointer;
+    box-shadow:0 10px 26px rgba(0,0,0,.32);transition:transform .32s var(--ease),box-shadow .32s var(--ease);
+    background:var(--em-700);animation:fadeIn .5s var(--ease) backwards;
+  }
+  .hero-mosaic .tile:nth-child(1){animation-delay:.05s}.hero-mosaic .tile:nth-child(2){animation-delay:.1s}
+  .hero-mosaic .tile:nth-child(3){animation-delay:.15s}.hero-mosaic .tile:nth-child(4){animation-delay:.2s}
+  .hero-mosaic .tile:nth-child(5){animation-delay:.25s}.hero-mosaic .tile:nth-child(6){animation-delay:.3s}
+  .hero-mosaic .tile:nth-child(7){animation-delay:.35s}.hero-mosaic .tile:nth-child(8){animation-delay:.4s}
+  .hero-mosaic .tile:hover{transform:scale(1.05) translateY(-2px);z-index:3;box-shadow:0 18px 40px rgba(0,0,0,.4)}
+  .hero-mosaic .tile img{width:100%;height:100%;object-fit:cover}
+  .hero-mosaic .tile .tlabel{
+    position:absolute;inset:auto 0 0 0;padding:20px 11px 9px;font-size:12px;font-weight:600;color:#fff;
+    background:linear-gradient(transparent,rgba(2,42,27,.88));opacity:0;transition:opacity .25s;
+  }
+  .hero-mosaic .tile:hover .tlabel{opacity:1}
+  .t-tall{grid-row:span 2}
+  .home-section{padding:64px 24px 30px}
+  .sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:26px;gap:16px;flex-wrap:wrap}
+  .sec-head h2{font-size:clamp(24px,2.8vw,32px);color:var(--em-900)}
+  .sec-head p{color:var(--ink-soft);font-size:14px;margin-top:4px}
+  .link-btn{color:var(--em-500);font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:5px;transition:color .2s,gap .2s}
+  .link-btn:hover{color:var(--em-900);gap:9px}
+
+  /* ---------- FRAME 2 : BROWSE ---------- */
+  .browse-layout{display:grid;grid-template-columns:260px 1fr;gap:32px;padding:36px 24px 70px}
+  .filters{position:sticky;top:84px;align-self:start;max-height:calc(100vh - 104px);overflow:auto;padding-right:6px}
+  .fgroup{background:#fff;border:1px solid var(--sand-200);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow-xs)}
+  .fgroup h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--em-700);margin-bottom:12px;font-family:var(--font-sans);font-weight:700}
+  .fopt{display:flex;align-items:center;gap:10px;font-size:14px;padding:6px 0;cursor:pointer;color:var(--ink);border-radius:8px;transition:color .15s}
+  .fopt:hover{color:var(--em-700)}
+  .fopt input{accent-color:var(--em-500);width:17px;height:17px;cursor:pointer;flex:none}
+  .fopt .cnt{margin-left:auto;font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  .scrolly{max-height:225px;overflow:auto;padding-right:4px}
+  .swatches{display:flex;flex-wrap:wrap;gap:10px}
+  .swatch{
+    width:30px;height:30px;border-radius:50%;border:2px solid var(--sand-200);
+    transition:transform .18s var(--spring),box-shadow .18s;position:relative;
+  }
+  .swatch:hover{transform:scale(1.18)}
+  .swatch.sel{border-color:var(--em-500);box-shadow:0 0 0 3px var(--em-100);transform:scale(1.08)}
+  .clear-filters{width:100%;padding:12px;border-radius:12px;background:var(--sand-100);color:var(--em-900);font-weight:700;font-size:13.5px;border:1px solid var(--sand-200);transition:background .2s;min-height:44px}
+  .clear-filters:hover{background:var(--sand-200)}
+  .browse-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+  .browse-head h2{font-size:clamp(22px,2.4vw,28px);color:var(--em-900)}
+  .result-count{color:var(--ink-soft);font-size:13px;font-weight:600;background:#fff;border:1px solid var(--sand-200);padding:5px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+  .sort-select{
+    margin-left:auto;padding:10px 14px;border-radius:12px;border:1px solid var(--sand-200);
+    background:#fff;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;
+    transition:border-color .2s;min-height:42px;
+  }
+  .sort-select:hover{border-color:var(--em-300)}
+  .active-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .active-chips .achip{
+    display:flex;align-items:center;gap:7px;background:var(--em-100);color:var(--em-900);
+    font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;animation:fadeIn .25s var(--ease);
+  }
+  .achip button{color:var(--em-700);font-weight:800;font-size:15px;line-height:1;padding:2px}
+  .achip button:hover{color:#9C3B2E}
+  .filters-toggle{display:none}
+  .empty-state{padding:70px 20px;text-align:center;color:var(--ink-soft);background:#fff;border:1px dashed var(--sand-300);border-radius:var(--r-lg)}
+  .empty-state b{display:block;font-size:18px;color:var(--em-900);margin-bottom:6px;font-family:var(--font-serif)}
+
+  /* ---------- FRAME 3 : COLLECTIONS ---------- */
+  .coll-hero{padding:58px 24px 8px;text-align:center}
+  .coll-hero h2{font-size:clamp(28px,3.6vw,44px);color:var(--em-900);letter-spacing:-.015em}
+  .coll-hero p{color:var(--ink-soft);margin-top:12px;max-width:60ch;margin-inline:auto}
+  .carousel-shell{position:relative;padding:36px 0 20px}
+  .carousel{
+    display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x proximity;
+    scroll-padding-left:24px;padding:10px 24px 28px;scrollbar-width:none;
+  }
+  .carousel::-webkit-scrollbar{display:none}
+  .coll-card{
+    flex:0 0 350px;scroll-snap-align:start;background:#fff;border-radius:var(--r-lg);overflow:hidden;
+    border:1px solid var(--sand-200);box-shadow:var(--shadow);
+    transition:transform .3s var(--ease),box-shadow .3s var(--ease);cursor:pointer;position:relative;
+  }
+  .coll-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-hover)}
+  .coll-cover{position:relative;height:238px;overflow:hidden;background:var(--sand-100)}
+  .coll-cover img{width:100%;height:100%;object-fit:cover;transition:transform .65s var(--ease)}
+  .coll-card:hover .coll-cover img{transform:scale(1.08)}
+  .coll-cover .veil{
+    position:absolute;inset:0;background:linear-gradient(185deg,transparent 38%,rgba(2,42,27,.78));
+  }
+  .coll-cover .coll-n{position:absolute;left:18px;bottom:15px;right:18px;color:#fff}
+  .coll-cover .coll-n h3{font-size:22px;word-break:break-word;letter-spacing:-.01em}
+  .coll-cover .coll-n span{font-size:13px;opacity:.88}
+  .coll-body{padding:16px 18px;display:flex;align-items:center;gap:10px}
+  .coll-thumbs{display:flex}
+  .coll-thumbs img{
+    width:42px;height:42px;border-radius:12px;object-fit:cover;border:2px solid #fff;
+    margin-left:-11px;box-shadow:0 1px 4px rgba(0,0,0,.15);background:var(--sand-100);
+  }
+  .coll-thumbs img:first-child{margin-left:0}
+  .coll-cta{margin-left:auto;color:var(--em-500);font-weight:700;font-size:14px;transition:color .2s}
+  .coll-card:hover .coll-cta{color:var(--em-900)}
+  .car-arrow{
+    position:absolute;top:45%;transform:translateY(-50%);z-index:6;
+    width:48px;height:48px;border-radius:50%;background:#fff;color:var(--em-900);
+    border:1px solid var(--sand-200);box-shadow:0 8px 22px rgba(4,61,43,.22);
+    display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s,box-shadow .2s;
+  }
+  .car-arrow:hover{background:var(--em-900);color:#fff;box-shadow:0 12px 28px rgba(4,61,43,.35)}
+  .car-arrow.prev{left:6px}
+  .car-arrow.next{right:6px}
+  .car-dots{display:flex;justify-content:center;gap:8px;padding-bottom:28px;flex-wrap:wrap}
+  .car-dots i{width:8px;height:8px;border-radius:50%;background:var(--sand-300);transition:all .28s var(--ease);cursor:pointer}
+  .car-dots i.on{background:var(--em-500);width:28px;border-radius:99px}
+  .coll-strip{background:linear-gradient(150deg,var(--em-950),var(--em-900));color:var(--sand-100);padding:46px 0;margin-top:14px}
+  .coll-strip .wrap{display:flex;gap:28px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  .coll-strip h3{font-size:clamp(20px,2.4vw,26px)}
+  .coll-strip p{color:var(--em-300);font-size:14px;margin-top:5px}
+  .btn-sand{background:var(--sand-200);color:var(--em-900);font-weight:700;padding:14px 26px;border-radius:14px;transition:background .2s,box-shadow .2s;min-height:48px}
+  .btn-sand:hover{background:#fff;box-shadow:0 10px 26px rgba(0,0,0,.25)}
+
+  /* ---------- FRAME 4 : VISUAL SEARCH ---------- */
+  .vs-hero{padding:56px 24px 10px;text-align:center}
+  .vs-hero h2{font-size:clamp(28px,3.6vw,44px);color:var(--em-900);letter-spacing:-.015em}
+  .vs-hero p{color:var(--ink-soft);margin-top:12px;max-width:62ch;margin-inline:auto}
+  .dropzone{
+    max-width:700px;margin:32px auto 0;border:2px dashed var(--em-300);border-radius:var(--r-lg);
+    background:#fff;padding:48px 26px;text-align:center;cursor:pointer;
+    transition:border-color .25s,background .25s,transform .25s var(--ease),box-shadow .25s;
+  }
+  .dropzone:hover,.dropzone.drag{border-color:var(--em-500);background:var(--em-50);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .dropzone .dz-icon{
+    width:68px;height:68px;margin:0 auto 16px;border-radius:20px;background:var(--em-900);
+    display:flex;align-items:center;justify-content:center;color:var(--sand-100);
+    box-shadow:0 10px 26px rgba(4,61,43,.3);transition:transform .25s var(--spring);
+  }
+  .dropzone:hover .dz-icon{transform:scale(1.07) rotate(-3deg)}
+  .dropzone b{font-size:17px;color:var(--em-900);font-family:var(--font-serif)}
+  .dropzone p{font-size:13.5px;color:var(--ink-soft);margin-top:6px}
+  .dz-note{font-size:12px;color:var(--ink-soft);margin-top:16px}
+  .samples{max-width:700px;margin:26px auto 0;text-align:center}
+  .samples p{font-size:13.5px;color:var(--ink-soft);margin-bottom:12px}
+  .samples .srow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .samples img{
+    width:88px;height:88px;object-fit:cover;border-radius:16px;cursor:pointer;
+    border:3px solid transparent;transition:transform .2s var(--spring),border-color .2s;box-shadow:var(--shadow);
+  }
+  .samples img:hover{transform:scale(1.09);border-color:var(--em-500)}
+  .vs-result{max-width:1140px;margin:38px auto 0;display:none}
+  .vs-result.show{display:block;animation:fadeIn .35s var(--ease)}
+  .vs-query{
+    display:flex;gap:22px;align-items:center;background:#fff;border-radius:var(--r-lg);padding:20px;
+    border:1px solid var(--sand-200);box-shadow:var(--shadow);flex-wrap:wrap;
+  }
+  .vs-query img{width:132px;height:104px;object-fit:cover;border-radius:14px}
+  .vs-query .qmeta{flex:1;min-width:220px}
+  .vs-query .qmeta b{color:var(--em-900);font-size:15px}
+  .vs-query .qtags{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .scanbar{height:7px;border-radius:99px;background:var(--sand-200);overflow:hidden;margin-top:14px}
+  .scanbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--em-500),var(--em-300));border-radius:99px;transition:width .3s var(--ease)}
+  .vs-grid-head{display:flex;align-items:baseline;justify-content:space-between;margin:30px 0 16px;flex-wrap:wrap;gap:10px}
+  .vs-grid-head h3{color:var(--em-900);font-size:21px}
+  .vs-grid-head span{font-size:13px;color:var(--ink-soft)}
+  .vs-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:6px 0 6px}
+  .vs-lbl{font-size:13px;color:var(--ink-soft);font-weight:600}
+  .vs-seg{display:inline-flex;background:var(--sand-100);border:1px solid var(--sand-200);border-radius:999px;padding:3px}
+  .vs-eng{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--ink-soft);min-height:38px;transition:color .2s,background .2s}
+  .vs-eng:hover{color:var(--em-900)}
+  .vs-eng.on{background:var(--em-900);color:#fff}
+  .vs-topfilters{position:static;top:auto;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0 0 4px;margin-bottom:10px}
+  .sim-toggle{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:2px 0 18px}
+  .sim-eng{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-soft);min-height:36px;transition:color .2s,background .2s}
+  .sim-eng:hover{color:var(--em-900)}
+  .sim-eng.on{background:var(--em-900);color:#fff}
+  .sim-loading{font-size:12.5px;color:var(--ink-soft);font-style:italic}
+
+  footer{background:var(--em-950);color:var(--em-300);margin-top:70px;padding:40px 0;font-size:13.5px}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+  footer b{color:var(--sand-200)}
+  footer a{color:var(--em-300);transition:color .2s}
+  footer a:hover{color:var(--sand-100)}
+
+  .toast{
+    position:fixed;bottom:max(24px,env(safe-area-inset-bottom));left:50%;transform:translate(-50%,90px);z-index:99;
+    background:var(--em-950);color:#fff;padding:14px 22px;border-radius:14px;font-size:14px;font-weight:600;
+    box-shadow:0 14px 38px rgba(0,0,0,.35);transition:transform .4s var(--spring);display:flex;gap:10px;align-items:center;
+  }
+  .toast.show{transform:translate(-50%,0)}
+  .toast .tick{color:var(--em-300);font-weight:800;display:flex}
+
+  /* ---------- PRODUCT PAGE (modal) ---------- */
+  .simcount{font-size:11.5px;color:var(--em-500);font-weight:700;margin-top:7px}
+  .cdots{display:flex;gap:5px;align-items:center}
+  .cdots i{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(31,43,37,.16);display:block;position:relative;transition:transform .15s var(--spring)}
+  .cdots i:hover{transform:scale(1.25)}
+  /* colour-name tooltip on hover (palette dots + filter swatches) */
+  .cdots i[data-cn]:hover::after,.swatch[data-tip]:hover::after{
+    content:attr(data-cn);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);
+    background:var(--em-950);color:var(--sand-100);font-size:11px;font-weight:600;line-height:1;
+    padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:8;pointer-events:none;
+    box-shadow:0 5px 14px rgba(0,0,0,.22);animation:fadeIn .15s var(--ease);
+  }
+  .swatch[data-tip]:hover::after{content:attr(data-tip);font-size:11.5px}
+
+  /* ---------- MOODBOARDS ---------- */
+  .chooser{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center}
+  .chooser.open{display:flex}
+  .chooser-back{position:absolute;inset:0;background:rgba(2,42,27,.52);backdrop-filter:blur(3px)}
+  .chooser-panel{
+    position:relative;width:min(420px,calc(100% - 32px));background:#fff;border-radius:var(--r-lg);
+    padding:24px;box-shadow:0 28px 80px rgba(0,0,0,.35);animation:popIn .28s var(--spring);
+  }
+  @keyframes popIn{from{opacity:0;transform:scale(.94) translateY(14px)}to{opacity:1;transform:none}}
+  .chooser-panel h3{color:var(--em-900);font-size:20px;margin-bottom:4px}
+  .chooser-panel .sub{font-size:13px;color:var(--ink-soft);margin-bottom:14px}
+  .board-row{
+    display:flex;align-items:center;gap:10px;width:100%;padding:13px 15px;border-radius:14px;
+    border:1.5px solid var(--sand-200);background:var(--sand-50);margin-bottom:8px;
+    font-weight:600;color:var(--em-900);font-size:14.5px;transition:border-color .15s,background .15s;text-align:left;
+    min-height:48px;
+  }
+  .board-row:hover{border-color:var(--em-500);background:var(--em-50)}
+  .board-row .bcount{margin-left:auto;font-size:12px;color:var(--ink-soft);font-weight:500;font-variant-numeric:tabular-nums}
+  .new-board{display:flex;gap:8px;margin-top:8px}
+  .new-board input{
+    flex:1;padding:12px 15px;border-radius:14px;border:1.5px solid var(--sand-200);font:inherit;
+    font-size:14px;outline:none;min-width:0;transition:border-color .2s;
+  }
+  .new-board input:focus{border-color:var(--em-500)}
+  .new-board button{background:var(--em-900);color:#fff;font-weight:700;padding:12px 18px;border-radius:14px;font-size:14px;min-height:46px}
+  .new-board button:hover{background:var(--em-700)}
+  .chooser-close{position:absolute;top:16px;right:16px;color:var(--ink-soft);display:flex;padding:6px;border-radius:99px;transition:background .2s,color .2s}
+  .chooser-close:hover{background:var(--sand-100);color:var(--em-900)}
+
+  .mb-list{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .mb-tab{
+    padding:9px 16px;border-radius:999px;border:1.5px solid var(--sand-200);background:#fff;
+    font-weight:600;font-size:13.5px;color:var(--ink);transition:all .18s var(--ease);min-height:40px;
+  }
+  .mb-tab:hover{border-color:var(--em-300)}
+  .mb-tab.on{background:var(--em-900);color:#fff;border-color:var(--em-900)}
+  .mb-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .mb-act{
+    display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:12px;
+    font-weight:600;font-size:13.5px;border:1.5px solid var(--sand-200);background:#fff;color:var(--em-900);
+    transition:background .18s,border-color .18s;min-height:42px;
+  }
+  .mb-act:hover{background:var(--sand-100)}
+  .mb-act.primary{background:var(--em-900);color:#fff;border-color:var(--em-900)}
+  .mb-act.primary:hover{background:var(--em-700)}
+  .mb-act.danger{color:#9C3B2E}
+  .mb-act.danger:hover{background:#F6E3E0;border-color:#E7C4BD}
+  .mb-empty{padding:56px 20px;text-align:center;color:var(--ink-soft)}
+  .mb-remove{
+    position:absolute;top:10px;left:10px;width:30px;height:30px;border-radius:50%;
+    background:rgba(255,255,255,.96);color:#9C3B2E;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.2);opacity:0;transition:opacity .2s,transform .15s;z-index:3;
+  }
+  .mb-remove:hover{transform:scale(1.1)}
+  .pcard:hover .mb-remove{opacity:1}
+  /* Moodboard grid: hover is INERT inside the moodboard — no transforms,
+     no shadow change, no image scale, no alt image, no tag reveal. Anything
+     that used to change on hover was the "glitchy" flicker (transform +
+     shadow triggered scrollbar recalc; alt image swap dropped in a
+     differently-sized room photo). Keep it a static grid. */
+  #mbBody .pcard, #mbBody .pcard:hover{transform:none !important;box-shadow:var(--shadow-xs) !important;border-color:var(--sand-200) !important;transition:none !important}
+  #mbBody .pcard .imgbox img.main, #mbBody .pcard:hover .imgbox img.main{transform:none !important;transition:none !important}
+  #mbBody .pcard .imgbox img.alt{display:none !important}
+  #mbBody .pcard .tags, #mbBody .pcard:hover .tags{opacity:0 !important;transform:none !important}
+  #mbBody .pcard:hover{cursor:pointer}
+  #mbBody{overflow-anchor:none}
+
+  /* always-on selection (all grids incl. similars) */
+  .pcard .selbox{
+    position:absolute;top:10px;left:10px;width:28px;height:28px;border-radius:9px;z-index:4;
+    background:rgba(255,255,255,.96);border:2px solid var(--sand-300);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,.16);opacity:0;transition:opacity .2s,transform .18s var(--spring),background .18s,border-color .18s;cursor:pointer;
+  }
+  .pcard:hover .selbox{opacity:1}
+  .pcard .selbox:hover{transform:scale(1.14);border-color:var(--em-500)}
+  .pcard.sel .selbox{opacity:1;background:var(--em-500);border-color:var(--em-500)}
+  .pcard.sel{outline:3px solid var(--em-500);outline-offset:-3px}
+  .pcard .sim-badge ~ .selbox, .pcard .mb-remove ~ .selbox{top:10px;left:46px}
+  .selbar{
+    position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translate(-50%,calc(100% + 30px));z-index:70;
+    display:flex;gap:8px;align-items:center;
+    background:rgba(2,42,27,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    color:#fff;padding:11px 15px;border-radius:18px;border:1px solid rgba(95,169,140,.3);
+    box-shadow:0 18px 50px rgba(0,0,0,.45);
+    transition:transform .42s var(--spring);flex-wrap:wrap;justify-content:center;max-width:calc(100% - 24px);
+  }
+  .selbar.show{transform:translate(-50%,0)}
+  .selbar b{font-size:14px;padding:0 6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .selbar button{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(244,238,225,.12);border:1px solid rgba(244,238,225,.22);color:#fff;
+    font-weight:600;font-size:13px;padding:9px 14px;border-radius:12px;white-space:nowrap;
+    transition:background .2s;min-height:38px;
+  }
+  .selbar button:hover{background:var(--em-500)}
+  .pmodal{position:fixed;inset:0;z-index:80;display:none}
+  .pmodal.open{display:block}
+  .pmodal-back{position:absolute;inset:0;background:rgba(2,42,27,.55);backdrop-filter:blur(4px)}
+  .pmodal-panel{
+    position:absolute;inset:4vh 0 0 0;margin:0 auto;max-width:1180px;width:calc(100% - 24px);
+    background:var(--sand-50);border-radius:26px 26px 0 0;overflow-y:auto;
+    box-shadow:0 -12px 70px rgba(0,0,0,.4);animation:slideUp .34s var(--ease);
+  }
+  @keyframes slideUp{from{transform:translateY(48px);opacity:0}to{transform:none;opacity:1}}
+  .pmodal-top{
+    position:sticky;top:0;z-index:5;display:flex;gap:10px;align-items:center;
+    padding:14px 20px;background:rgba(250,247,240,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--sand-200);
+  }
+  .pmodal-top .spacer{flex:1}
+  .pm-btn{
+    display:inline-flex;align-items:center;gap:7px;
+    background:#fff;border:1px solid var(--sand-200);border-radius:999px;padding:9px 17px;
+    font-weight:600;font-size:14px;color:var(--em-900);transition:background .2s,border-color .2s;min-height:40px;
+  }
+  .pm-btn:hover{background:var(--sand-100);border-color:var(--em-300)}
+  .pm-body{padding:30px 30px 46px}
+  .pm-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:38px;align-items:start}
+  .pm-gallery .pm-main{border-radius:var(--r-lg);overflow:hidden;background:var(--sand-100);aspect-ratio:4/3;border:1px solid var(--sand-200);position:relative}
+  .pm-gallery .pm-main img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}
+  .pm-gallery .pm-main::after{content:"⤢ Enlarge";position:absolute;right:12px;bottom:12px;background:rgba(2,42,27,.82);color:var(--sand-100);font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .pm-gallery .pm-main:hover::after{opacity:1}
+  /* full-screen image zoom */
+  .lightbox{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;padding:28px;background:rgba(2,42,27,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:zoom-out}
+  .lightbox.open{display:flex;animation:fadeIn .2s var(--ease)}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+  .lightbox-close{position:absolute;top:20px;right:20px;width:44px;height:44px;border-radius:999px;background:rgba(250,247,240,.14);border:1px solid rgba(244,238,225,.3);color:#fff;display:flex;align-items:center;justify-content:center}
+  .lightbox-close:hover{background:rgba(250,247,240,.26)}
+
+  /* ---------- SEARCH AUTOCOMPLETE ---------- */
+  .searchbar{position:relative}
+  .ac-panel{
+    position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:12;
+    background:#fff;border:1px solid var(--sand-200);border-radius:18px;
+    box-shadow:0 24px 60px rgba(2,42,27,.24);
+    max-height:min(60vh,440px);overflow:auto;padding:8px;display:none;
+  }
+  .ac-panel.open{display:block;animation:fadeIn .16s var(--ease)}
+  .ac-group{padding:8px 12px 4px;font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--em-700);font-weight:700}
+  .ac-item{
+    display:flex;align-items:center;gap:12px;width:100%;padding:9px 12px;border-radius:12px;
+    text-align:left;color:var(--ink);font-size:14px;cursor:pointer;
+  }
+  .ac-item:hover,.ac-item.on{background:var(--em-100);color:var(--em-900)}
+  .ac-item img{width:44px;height:36px;object-fit:cover;border-radius:8px;background:var(--sand-100);flex:none}
+  .ac-item .ac-swatch{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--sand-200);flex:none}
+  .ac-item .ac-icon{width:22px;height:22px;border-radius:6px;background:var(--sand-100);display:flex;align-items:center;justify-content:center;color:var(--em-700);flex:none}
+  .ac-item .ac-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ac-item .ac-meta{font-size:12px;color:var(--ink-soft);flex:none}
+  .ac-empty{padding:14px 12px;font-size:13.5px;color:var(--ink-soft)}
+  @media (max-width:960px){.ac-panel{max-height:60vh}}
+
+  /* ---------- RECENTLY VIEWED ---------- */
+  .rv-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;scroll-snap-type:x proximity;scrollbar-width:none}
+  .rv-scroll::-webkit-scrollbar{display:none}
+  .rv-card{
+    flex:0 0 150px;scroll-snap-align:start;background:#fff;border:1px solid var(--sand-200);
+    border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .22s var(--ease),box-shadow .22s var(--ease);
+    box-shadow:var(--shadow-xs);
+  }
+  .rv-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .rv-card img{width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--sand-100)}
+  .rv-card .rv-info{padding:8px 10px 10px}
+  .rv-card .rv-sku{font-weight:700;font-size:12.5px;color:var(--em-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rv-card .rv-meta{font-size:11px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+  #recentSection{display:none}
+  #recentSection.show{display:block}
+
+  /* ---------- COMPARE MODAL ---------- */
+  .cmp-grid{display:grid;gap:20px;padding:26px}
+  .cmp-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cmp-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cmp-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .cmp-col{background:#fff;border:1px solid var(--sand-200);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+  .cmp-col .cmp-img{aspect-ratio:1/1;background:var(--sand-100);position:relative;cursor:zoom-in}
+  .cmp-col .cmp-img img{width:100%;height:100%;object-fit:cover}
+  .cmp-col .cmp-drop{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.95);color:#9C3B2E;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+  .cmp-col .cmp-drop:hover{background:#F6E3E0}
+  .cmp-col .cmp-body{padding:14px 15px 15px;flex:1;display:flex;flex-direction:column;gap:6px}
+  .cmp-col h3{font-family:var(--font-sans);font-size:14.5px;font-weight:700;color:var(--em-900);word-break:break-word}
+  .cmp-col .cmp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+  .cmp-col .cmp-chips .chip{background:var(--em-100);color:var(--em-900)}
+  .cmp-col .cmp-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--sand-200)}
+  .cmp-col .cmp-row span:first-child{color:var(--ink-soft)}
+  .cmp-col .cmp-row span:last-child{font-weight:600;text-align:right}
+  .cmp-col .cmp-actions{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+  .cmp-col .cmp-actions button{flex:1;font-size:12px;padding:8px;border-radius:10px;font-weight:600}
+  @media (max-width:820px){
+    .cmp-grid{padding:16px;grid-template-columns:1fr 1fr !important}
+    .cmp-col h3{font-size:13.5px}
+  }
+  .pm-thumbs{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .pm-thumbs img{width:68px;height:68px;object-fit:cover;border-radius:12px;cursor:pointer;border:2.5px solid transparent;background:var(--sand-100);transition:transform .18s var(--spring),border-color .18s}
+  .pm-thumbs img:hover{transform:scale(1.06)}
+  .pm-thumbs img.cur{border-color:var(--em-500)}
+  .pm-info h2{font-size:clamp(24px,2.6vw,30px);color:var(--em-900);word-break:break-word;letter-spacing:-.01em}
+  .pm-rows{margin-top:20px;border-top:1px solid var(--sand-200)}
+  .pm-row{display:flex;justify-content:space-between;gap:18px;padding:11px 0;border-bottom:1px solid var(--sand-200);font-size:14.5px}
+  .pm-row span:first-child{color:var(--ink-soft)}
+  .pm-row span:last-child{font-weight:600;text-align:right}
+  .pm-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+  .pm-quote{
+    margin-top:22px;width:100%;background:var(--em-900);color:#fff;font-weight:700;font-size:15.5px;
+    padding:16px;border-radius:14px;transition:background .2s,box-shadow .2s;min-height:52px;
+    box-shadow:0 10px 28px -8px rgba(4,61,43,.45);
+  }
+  .pm-quote:hover{background:var(--em-700);box-shadow:0 14px 34px -8px rgba(4,61,43,.55)}
+  .pm-lowstock{margin-top:14px;background:#FBEFD9;border:1px solid #EAD9AE;color:#8A6116;font-size:13.5px;padding:12px 15px;border-radius:12px}
+  .pm-lowstock.out{background:#F6E3E0;border-color:#E7C4BD;color:#9C3B2E}
+  .pm-sim{margin-top:44px}
+  .pm-sim h3{font-size:22px;color:var(--em-900);margin-bottom:4px}
+  .pm-sim .sub{font-size:13.5px;color:var(--ink-soft);margin-bottom:16px}
+  .pm-empty{color:var(--ink-soft);font-size:14px;padding:14px 0}
+  @media (max-width:820px){.pm-grid{grid-template-columns:1fr}.pm-body{padding:20px 16px 32px}}
+
+  /* ---------- TOP FILTER BAR (mirrors the sidebar) ---------- */
+  .topfilters{
+    position:sticky;top:66px;z-index:40;
+    display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+    background:rgba(250,247,240,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    padding:10px 0;margin-bottom:14px;
+  }
+  .fdrop{position:relative}
+  .fdrop-btn{
+    display:inline-flex;align-items:center;gap:7px;
+    background:#fff;border:1px solid var(--sand-200);border-radius:999px;
+    padding:9px 15px;font-size:13.5px;font-weight:600;color:var(--em-900);
+    transition:border-color .2s,box-shadow .2s;min-height:40px;
+  }
+  .fdrop-btn:hover{border-color:var(--em-300)}
+  .fdrop.open .fdrop-btn{border-color:var(--em-500);box-shadow:0 0 0 3px var(--em-100)}
+  .fdrop-btn svg{transition:transform .2s}
+  .fdrop.open .fdrop-btn svg{transform:rotate(180deg)}
+  .fbadge{
+    display:none;background:var(--em-500);color:#fff;font-size:11px;font-weight:800;
+    min-width:19px;height:19px;border-radius:999px;align-items:center;justify-content:center;padding:0 5px;
+  }
+  .fbadge.has{display:inline-flex}
+  .fdrop-panel{
+    display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:45;
+    background:#fff;border:1px solid var(--sand-200);border-radius:16px;
+    padding:14px;min-width:250px;max-height:320px;overflow:auto;
+    box-shadow:0 18px 44px rgba(2,42,27,.18);
+  }
+  .fdrop.open .fdrop-panel{display:block;animation:fadeIn .18s var(--ease)}
+  .fdrop-panel .swatches{max-width:250px}
+  .instock-chip{
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+    background:#fff;border:1px solid var(--sand-200);border-radius:999px;
+    padding:9px 15px;font-size:13.5px;font-weight:600;color:var(--em-900);min-height:40px;
+  }
+  .instock-chip input{accent-color:var(--em-500);width:16px;height:16px;cursor:pointer}
+  .tf-clear{font-size:13px;font-weight:600;color:var(--ink-soft);padding:9px 10px;min-height:40px}
+  .tf-clear:hover{color:#9C3B2E}
+  .icon-btn{
+    display:flex;align-items:center;justify-content:center;width:40px;height:40px;
+    border-radius:999px;background:#fff;border:1px solid var(--sand-200);color:var(--em-900);
+    transition:border-color .2s,box-shadow .2s;box-shadow:var(--shadow-xs);
+  }
+  .icon-btn:hover{border-color:var(--em-300);box-shadow:var(--shadow)}
+  .pm-share{display:flex;gap:8px;margin-top:10px}
+  .pm-share .mb-act{flex:1;justify-content:center}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:960px){
+    .hero{padding:56px 0 72px}
+    .hero-grid{grid-template-columns:1fr;gap:38px}
+    .hero-mosaic{grid-auto-rows:80px}
+    .browse-layout{grid-template-columns:1fr;padding-top:26px}
+    .filters{
+      position:fixed;top:0;left:0;bottom:0;z-index:60;background:var(--sand-50);
+      width:min(340px,88vw);max-height:none;padding:64px 18px 24px;
+      transform:translateX(-103%);transition:transform .32s var(--ease),box-shadow .32s;
+      display:block;overflow-y:auto;
+    }
+    .filters.open{transform:none;box-shadow:0 0 0 100vmax rgba(2,42,27,.45),24px 0 60px rgba(0,0,0,.2)}
+    .filters-close{
+      position:absolute;top:14px;right:14px;color:var(--em-900);display:flex;
+      background:#fff;border:1px solid var(--sand-200);border-radius:99px;padding:9px;
+    }
+    .filters-toggle{
+      display:inline-flex;align-items:center;gap:8px;background:var(--em-900);color:#fff;
+      font-weight:600;font-size:14px;padding:10px 18px;border-radius:999px;min-height:44px;
+      box-shadow:0 6px 18px -6px rgba(4,61,43,.4);
+    }
+    .coll-card{flex-basis:300px}
+  }
+  @media (min-width:961px){.filters-close{display:none}}
+  @media (max-width:560px){
+    .topbar-inner{flex-wrap:wrap;gap:10px;padding:10px 16px}
+    .frame-tabs{order:3;width:100%;margin-left:0;justify-content:space-between}
+    .frame-tabs button{flex:1;text-align:center;padding:8px 10px}
+    .wrap{padding:0 16px}
+    .hero{padding:44px 0 60px}
+    .hero h1{font-size:clamp(34px,9.4vw,44px)}
+    .hero-stats{gap:0}
+    .hero-stats > div{padding:2px 16px}
+    .hero-stats .updated-note{padding-left:16px}
+    .home-section{padding:44px 16px 24px}
+    .pgrid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+    .searchbar button span{display:none}
+    .searchbar button{padding:12px 18px}
+    .coll-card{flex-basis:260px}
+    .vs-query img{width:100%;height:150px}
+    .pinfo{padding:11px 12px 12px}
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms !important;animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;scroll-behavior:auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" href="#home" onclick="go('home');return false;">
+      <span class="mark">WCD</span>
+      <span class="tag">Visual Marketplace</span>
+    </a>
+    <nav class="frame-tabs" id="tabs">
+      <button data-frame="home" class="active">Home</button>
+      <button data-frame="browse">Browse</button>
+      <button data-frame="collections">Collections</button>
+      <button data-frame="visual">Visual Search</button>
+    </nav>
+    <button class="quote-btn" title="Your project moodboards" onclick="openMB()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>
+      Moodboards <span class="quote-count" id="quoteCount">0</span>
+    </button>
+    <a class="icon-btn" href="admin.html" title="Site admin — edit titles, PDF layout, tags" aria-label="Site admin">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </a>
+  </div>
+</header>
+
+<div class="boot-error" id="bootError">
+  <b>Catalogue data not found</b>
+  The live product feed (products.json) hasn't been generated yet.<br>
+  Double-click <strong>“Update Marketplace Data.command”</strong> in the prototype folder, then refresh this page.
+</div>
+
+<!-- ============ FRAME 1 : HOMEPAGE ============ -->
+<section class="frame active" id="frame-home">
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Wallcoverings · Fabrics · Vinyl · Stickers</p>
+        <h1 id="heroTitle">Find the perfect surface, <em>visually.</em></h1>
+        <p class="sub" id="heroSub">Search the entire WCD catalogue the way designers think — by look, colour and mood. Not by SKU code.</p>
+        <form class="searchbar" onsubmit="heroSearch(event)">
+          <input id="heroQ" type="text" placeholder="Try &quot;floral&quot;, &quot;plain grey&quot;, a collection or a SKU…" autocomplete="off"
+                 oninput="acUpdate()" onfocus="acUpdate()" onkeydown="acKey(event)">
+          <button type="submit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+            <span>Search</span>
+          </button>
+          <div class="ac-panel" id="acPanel"></div>
+        </form>
+        <div class="search-hints">
+          <span>Popular:</span>
+          <button class="hint-chip" data-q="Floral">Floral</button>
+          <button class="hint-chip" data-q="Marble">Marble</button>
+          <button class="hint-chip" data-q="Tile">Tile</button>
+          <button class="hint-chip" data-q="Fluted">Fluted</button>
+          <button class="hint-chip" onclick="go('visual')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7.5 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3.5z"/><circle cx="12" cy="13" r="3"/></svg>
+            Search by photo</button>
+        </div>
+        <div class="hero-stats">
+          <div><b id="statProducts">—</b><span>Products live</span></div>
+          <div><b id="statColls">—</b><span>Collections</span></div>
+          <div><b id="statTypes">—</b><span>Product types</span></div>
+          <div class="updated-note" id="updatedNote"></div>
+        </div>
+      </div>
+      <div class="hero-mosaic" id="heroMosaic"><!-- js --></div>
+    </div>
+  </div>
+
+  <div class="wrap home-section" id="recentSection">
+    <div class="sec-head">
+      <div>
+        <h2>Recently viewed</h2>
+        <p>Jump back to designs you opened this session.</p>
+      </div>
+      <button class="link-btn" onclick="clearRecent()">Clear</button>
+    </div>
+    <div class="rv-scroll" id="recentStrip"></div>
+  </div>
+
+  <div class="wrap home-section">
+    <div class="sec-head">
+      <div>
+        <h2 id="homeSecTitle">Fresh from the catalogue</h2>
+        <p>Hover any swatch — enlarge, see tags, tick to select, add to a moodboard.</p>
+      </div>
+      <button class="link-btn" onclick="go('browse')">Browse all →</button>
+    </div>
+    <div class="pgrid" id="homeGrid"><!-- js --></div>
+  </div>
+</section>
+
+<!-- ============ FRAME 2 : BROWSE ============ -->
+<section class="frame" id="frame-browse">
+  <div class="wrap browse-layout">
+    <aside class="filters" id="filtersPanel">
+      <button class="filters-close" onclick="toggleFilters(false)" aria-label="Close filters">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="fgroup">
+        <h4>Pattern</h4>
+        <div id="patternFilters" class="scrolly"><!-- js --></div>
+      </div>
+      <div class="fgroup">
+        <h4>Colour</h4>
+        <div class="swatches" id="colourFilters"><!-- js --></div>
+      </div>
+      <div class="fgroup">
+        <h4>Product Type</h4>
+        <div id="typeFilters" class="scrolly"><!-- js --></div>
+      </div>
+      <div class="fgroup">
+        <h4>Availability</h4>
+        <label class="fopt"><input type="checkbox" id="inStockOnly" data-instock onchange="toggleInStock(this)"> In stock only</label>
+      </div>
+      <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
+    </aside>
+
+    <div>
+      <div class="browse-head">
+        <h2>Catalogue</h2>
+        <span class="result-count" id="resultCount"></span>
+        <button class="filters-toggle" onclick="toggleFilters(true)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          Filters
+        </button>
+        <select class="sort-select" id="sortSel" onchange="applyFilters()">
+          <option value="featured">Sort: Featured</option>
+          <option value="newest">Newest first</option>
+          <option value="sku">SKU code</option>
+          <option value="stock">Stock level</option>
+        </select>
+      </div>
+      <div class="topfilters" id="topFilters">
+        <div class="fdrop">
+          <button class="fdrop-btn" onclick="toggleDrop(this)">Pattern <b class="fbadge" data-badge="patterns"></b>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="fdrop-panel" id="patternFiltersTop"></div>
+        </div>
+        <div class="fdrop">
+          <button class="fdrop-btn" onclick="toggleDrop(this)">Colour <b class="fbadge" data-badge="colours"></b>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="fdrop-panel"><div class="swatches" id="colourFiltersTop"></div></div>
+        </div>
+        <div class="fdrop">
+          <button class="fdrop-btn" onclick="toggleDrop(this)">Product Type <b class="fbadge" data-badge="types"></b>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="fdrop-panel" id="typeFiltersTop"></div>
+        </div>
+        <label class="instock-chip"><input type="checkbox" data-instock onchange="toggleInStock(this)"> In stock only</label>
+        <button class="tf-clear" onclick="clearFilters()">Clear all</button>
+      </div>
+      <div class="active-chips" id="activeChips"></div>
+      <div class="pgrid" id="browseGrid"></div>
+      <button class="load-more" id="loadMore" style="display:none" onclick="loadMore()">Load more designs</button>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <b>No designs match those filters</b>
+        Try removing a colour or pattern filter — or use Visual Search with a reference photo.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FRAME 3 : COLLECTIONS ============ -->
+<section class="frame" id="frame-collections">
+  <div class="wrap coll-hero">
+    <h2>Featured Collections</h2>
+    <p>The biggest live collections in the WCD catalogue right now. Click any collection to browse it with the filter pre-applied.</p>
+  </div>
+  <div class="carousel-shell wrap" style="position:relative">
+    <button class="car-arrow prev" onclick="slideCarousel(-1)" aria-label="Previous collections">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <div class="carousel" id="carousel"><!-- js --></div>
+    <button class="car-arrow next" onclick="slideCarousel(1)" aria-label="Next collections">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+  <div class="car-dots" id="carDots"></div>
+  <div class="coll-strip">
+    <div class="wrap">
+      <div>
+        <h3 class="serif">Trade programme for ID firms &amp; contractors</h3>
+        <p>Project pricing, cut-length sampling and site delivery across Malaysia.</p>
+      </div>
+      <button class="btn-sand" onclick="toast('Prototype only — this would open the trade sign-up form')">Join WCD Trade →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FRAME 4 : VISUAL SEARCH ============ -->
+<section class="frame" id="frame-visual">
+  <div class="wrap vs-hero">
+    <h2>Search with a photo</h2>
+    <p>Snap a client's reference — a Pinterest screenshot, a site photo, a competitor swatch — and our visual AI matches it against the live WCD catalogue by how the design looks.</p>
+  </div>
+  <div class="wrap">
+    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+      <div class="dz-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+      </div>
+      <b>Drop an image here, or click to upload</b>
+      <p>JPG or PNG · matched against the full live catalogue by how the design looks</p>
+      <p class="dz-note">Matched by our visual AI — the same engine behind “similar designs”, ranking by
+        pattern and texture, not just colour. The first search loads the model once (~90 MB), then it’s instant.</p>
+      <input type="file" id="fileInput" accept="image/*" hidden onchange="handleFile(this.files[0])">
+    </div>
+
+    <div class="samples">
+      <p>No photo handy? Try one of these references:</p>
+      <div class="srow" id="sampleRow"><!-- js --></div>
+    </div>
+
+    <div class="vs-result" id="vsResult">
+      <div class="vs-query">
+        <img id="qImg" alt="Query image">
+        <div class="qmeta">
+          <b id="qStatus">Analysing image…</b>
+          <div class="qtags" id="qTags"></div>
+          <div class="scanbar"><i id="scanFill"></i></div>
+        </div>
+      </div>
+      <div class="vs-grid-head">
+        <h3>Closest matches by look</h3>
+        <span id="vsShowing">Across <span id="vsPool">—</span> visually fingerprinted designs</span>
+      </div>
+      <div class="vs-controls">
+        <span class="vs-lbl">Match by</span>
+        <div class="vs-seg">
+          <button class="vs-eng on" data-eng="both" onclick="setVSEngine('both')">Visual + Colour</button>
+          <button class="vs-eng" data-eng="ai" onclick="setVSEngine('ai')">Visual only</button>
+          <button class="vs-eng" data-eng="colour" onclick="setVSEngine('colour')">Colour only</button>
+        </div>
+      </div>
+      <div class="topfilters vs-topfilters" id="vsFilters">
+        <span class="vs-lbl" style="margin-right:2px">Filter</span>
+        <div class="fdrop">
+          <button class="fdrop-btn" onclick="toggleDrop(this)">Pattern <b class="fbadge" data-vsbadge="patterns"></b>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="fdrop-panel" id="vsPatternFilters"></div>
+        </div>
+        <div class="fdrop">
+          <button class="fdrop-btn" onclick="toggleDrop(this)">Colour <b class="fbadge" data-vsbadge="colours"></b>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="fdrop-panel"><div class="swatches" id="vsColourFilters"></div></div>
+        </div>
+        <div class="fdrop">
+          <button class="fdrop-btn" onclick="toggleDrop(this)">Product Type <b class="fbadge" data-vsbadge="types"></b>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="fdrop-panel" id="vsTypeFilters"></div>
+        </div>
+        <label class="instock-chip"><input type="checkbox" id="vsInStock" onchange="vsToggleInStock(this)"> In stock only</label>
+        <button class="tf-clear" onclick="vsClearFilters()">Clear all</button>
+      </div>
+      <div class="pgrid" id="vsGrid"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><b>WCD</b> · Wallcoverings, fabrics &amp; interior surfaces · Malaysia</div>
+    <div>Interactive prototype · live catalogue data · <span id="footerUpdated"></span> · <a href="admin.html">Admin</a></div>
+  </div>
+</footer>
+
+<!-- ============ MOODBOARD CHOOSER ============ -->
+<div class="chooser" id="chooser">
+  <div class="chooser-back" onclick="closeChooser()"></div>
+  <div class="chooser-panel">
+    <button class="chooser-close" onclick="closeChooser()" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h3>Add to moodboard</h3>
+    <div class="sub" id="chooserSub"></div>
+    <div id="chooserBoards"></div>
+    <div class="new-board">
+      <input id="newBoardName" type="text" placeholder="New moodboard, e.g. Damansara Bungalow" onkeydown="if(event.key==='Enter')createBoardAndAdd()">
+      <button onclick="createBoardAndAdd()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MOODBOARDS PANEL ============ -->
+<div class="pmodal" id="mbModal">
+  <div class="pmodal-back" onclick="closeMB()"></div>
+  <div class="pmodal-panel">
+    <div class="pmodal-top">
+      <h3 class="serif" style="color:var(--em-900);font-size:20px">My Moodboards</h3>
+      <span class="spacer"></span>
+      <button class="pm-btn" onclick="closeMB()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        Close</button>
+    </div>
+    <div class="pm-body" id="mbBody"></div>
+  </div>
+</div>
+
+<!-- selection action bar (browse) -->
+<div class="selbar" id="selbar">
+  <b id="selCount"></b>
+  <button onclick="selCompare()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="18" rx="1.5"/></svg>Compare</button>
+  <button onclick="selToBoard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Moodboard</button>
+  <button onclick="selExport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export PDF</button>
+  <button onclick="selWhatsApp()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>WhatsApp</button>
+  <button onclick="clearSelection()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>Clear</button>
+</div>
+
+<!-- ============ PRODUCT PAGE (modal) ============ -->
+<div class="pmodal" id="pmodal">
+  <div class="pmodal-back" onclick="closeProduct()"></div>
+  <div class="pmodal-panel">
+    <div class="pmodal-top">
+      <button class="pm-btn" id="pmBackBtn" style="display:none" onclick="productBack()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m12 19-7-7 7-7"/><path d="M5 12h14"/></svg>
+        Back</button>
+      <span class="spacer"></span>
+      <button class="pm-btn" onclick="closeProduct()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        Close</button>
+    </div>
+    <div class="pm-body" id="pmBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="tick"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span><span id="toastMsg"></span></div>
+
+<!-- full-screen image zoom -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <img id="lightboxImg" alt="Enlarged design">
+</div>
+
+<!-- Compare side-by-side -->
+<div class="pmodal" id="cmpModal">
+  <div class="pmodal-back" onclick="closeCompare()"></div>
+  <div class="pmodal-panel">
+    <div class="pmodal-top">
+      <h3 class="serif" style="color:var(--em-900);font-size:20px">Compare designs</h3>
+      <span class="spacer"></span>
+      <button class="pm-btn" onclick="closeCompare()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        Close</button>
+    </div>
+    <div id="cmpBody"></div>
+  </div>
+</div>
+
+<script>
+/* ================= CONSTANTS ================= */
+const PARENT_HEX = {
+  "White":"#F4F2ED","Cream":"#EFE6CE","Beige":"#DECFAE","Light Brown":"#C29A6B",
+  "Brown":"#8A6242","Dark Brown":"#5B4030","Black":"#2A2A2A","Dark Grey":"#5A5E60",
+  "Grey":"#8A8D8F","Light Grey":"#C4C6C8","Gold":"#D2AC57","Yellow":"#E8CF6B",
+  "Peach":"#F2C8A8","Orange":"#DE8E4A","Red":"#BE4040","Dark Red":"#7C2B39",
+  "Pink":"#E6A8BC","Purple":"#8D62A8","Dark Blue":"#2C3B60","Blue":"#4A6FA5",
+  "Light Blue":"#A9C4DC","Teal":"#3E8C8C","Dark Green":"#2F5B40","Green":"#5C8F60",
+  "Light Green":"#A9C29A"
+};
+const IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="#F4EEE1"/><text x="200" y="155" font-family="sans-serif" font-size="15" fill="#B39E74" text-anchor="middle">image unavailable</text></svg>');
+
+let PRODUCTS = [], COLLS = [], UPDATED = "";
+
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+/* ================= BOOT ================= */
+fetch("products.json?v=" + Date.now())
+  .then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d => init(d))
+  .catch(() => {
+    document.getElementById("bootError").style.display = "block";
+    document.getElementById("frame-home").classList.remove("active");
+  });
+
+/* admin-configurable settings + local tag corrections (see admin.html) */
+const SETTINGS = Object.assign(
+  {titles:{}, pdf:{title:"", cols:2,
+    fields:{type:true, collection:true, rollsize:true, backing:true, pattern:true, colours:true, stock:true, roomimages:true}}},
+  JSON.parse(localStorage.getItem("wcd_site_settings") || "{}"));
+/* settings saved before a field existed should default it to ON */
+for(const k of ["type","collection","rollsize","backing","pattern","colours","stock","roomimages"])
+  if(SETTINGS.pdf.fields[k] === undefined) SETTINGS.pdf.fields[k] = true;
+const TAG_OVERRIDES = JSON.parse(localStorage.getItem("wcd_tag_overrides") || "{}");
+
+function init(data){
+  PRODUCTS = data.products;
+  UPDATED = data.updated;
+  PRODUCTS.forEach(p => {
+    if(TAG_OVERRIDES[p.sku]) p.p = TAG_OVERRIDES[p.sku];
+    byId.set(p.sku, p);
+  });
+  const T = SETTINGS.titles || {};
+  if(T.hero) document.getElementById("heroTitle").textContent = T.hero;
+  if(T.sub) document.getElementById("heroSub").textContent = T.sub;
+  if(T.homeSec) document.getElementById("homeSecTitle").textContent = T.homeSec;
+
+  /* hero stats */
+  const colls = new Map(), types = new Map();
+  PRODUCTS.forEach(p => {
+    if(p.c) colls.set(p.c, (colls.get(p.c)||0)+1);
+    if(p.t) types.set(p.t, (types.get(p.t)||0)+1);
+  });
+  document.getElementById("statProducts").textContent = PRODUCTS.length.toLocaleString();
+  document.getElementById("statColls").textContent = colls.size;
+  document.getElementById("statTypes").textContent = types.size;
+  document.getElementById("updatedNote").textContent = "Updated " + UPDATED;
+  document.getElementById("footerUpdated").textContent = "data updated " + UPDATED;
+
+  /* hero mosaic: one design from 8 different pattern classes */
+  const mosaicPats = ["Mural","Floral","Marble","Damask","Geometric","Tropical","Tile","Fluted"];
+  const mosaic = mosaicPats.map(pt => PRODUCTS.find(p => p.p === pt)).filter(Boolean);
+  document.getElementById("heroMosaic").innerHTML = mosaic.map((p,i) =>
+    `<div class="tile ${i===0||i===3?"t-tall":""}" data-q="${esc(p.p)}">
+      <img src="${esc(p.i)}" alt="${esc(p.sku)}" loading="lazy" onerror="imgFail(this)">
+      <span class="tlabel">${esc(p.sku)} · ${esc(p.p)}</span></div>`).join("");
+
+  /* home grid: 12 designs from 12 different collections */
+  const seen = new Set(), fresh = [];
+  for(const p of PRODUCTS){
+    if(!p.p || !p.c || seen.has(p.c)) continue;
+    seen.add(p.c); fresh.push(p);
+    if(fresh.length === 12) break;
+  }
+  document.getElementById("homeGrid").innerHTML = fresh.map(p => cardHTML(p)).join("");
+
+  /* filters — rendered twice: sidebar + top bar popovers (kept in sync) */
+  PRODUCTS.forEach((p,i)=>p._i=i);   // sheet row order; "Newest first" = reverse
+  const patCounts = new Map();
+  PRODUCTS.forEach(p => { if(p.p) patCounts.set(p.p, (patCounts.get(p.p)||0)+1); });
+  const patternHTML = [...patCounts.entries()].sort((a,b)=>b[1]-a[1]).map(([pt,n]) =>
+    `<label class="fopt"><input type="checkbox" value="${esc(pt)}" onchange="togglePattern(this)"> ${esc(pt)} <span class="cnt">${n.toLocaleString()}</span></label>`).join("");
+  document.getElementById("patternFilters").innerHTML = patternHTML;
+  document.getElementById("patternFiltersTop").innerHTML = patternHTML;
+
+  const colCounts = new Map();
+  PRODUCTS.forEach(p => (p.k||[]).forEach(c => colCounts.set(c, (colCounts.get(c)||0)+1)));
+  const colourHTML = Object.keys(PARENT_HEX).filter(c => colCounts.has(c)).map(c =>
+    `<button class="swatch" data-tip="${esc(c)} · ${colCounts.get(c).toLocaleString()}" data-c="${esc(c)}" style="background:${PARENT_HEX[c]}" onclick="toggleColour(this)"></button>`).join("");
+  document.getElementById("colourFilters").innerHTML = colourHTML;
+  document.getElementById("colourFiltersTop").innerHTML = colourHTML;
+
+  const typeHTML = [...types.entries()].sort((a,b)=>b[1]-a[1]).map(([t,n]) =>
+    `<label class="fopt"><input type="checkbox" value="${esc(t)}" onchange="toggleType(this)"> ${esc(t)} <span class="cnt">${n.toLocaleString()}</span></label>`).join("");
+  document.getElementById("typeFilters").innerHTML = typeHTML;
+  document.getElementById("typeFiltersTop").innerHTML = typeHTML;
+
+  /* Visual Search reuses the same filter controls (own handlers + state) */
+  document.getElementById("vsPatternFilters").innerHTML = patternHTML.replaceAll("togglePattern", "vsTogglePattern");
+  document.getElementById("vsColourFilters").innerHTML = colourHTML.replaceAll("toggleColour", "vsToggleColour");
+  document.getElementById("vsTypeFilters").innerHTML = typeHTML.replaceAll("toggleType", "vsToggleType");
+
+  /* wallpaper product types are pre-selected by default */
+  [...types.keys()].filter(t => /wallpaper/i.test(t) && !/sticker/i.test(t)).forEach(t => DEF_TYPES.add(t));
+  applyDefaultTypes();
+
+  /* collections carousel: top 10 by live product count */
+  COLLS = [...colls.entries()].filter(([n]) => n).sort((a,b)=>b[1]-a[1]).slice(0,10)
+    .map(([name,count]) => ({name, count, items: []}));
+  const wanted = new Map(COLLS.map(c => [c.name, c]));
+  for(const p of PRODUCTS){
+    const c = wanted.get(p.c);
+    if(c && c.items.length < 4) c.items.push(p);
+  }
+  document.getElementById("carousel").innerHTML = COLLS.map(c =>
+    `<div class="coll-card" data-coll="${esc(c.name)}">
+      <div class="coll-cover">
+        <img src="${esc(c.items[0].i)}" alt="${esc(c.name)}" loading="lazy" onerror="imgFail(this)"><div class="veil"></div>
+        <div class="coll-n"><h3 class="serif">${esc(c.name)}</h3><span>${c.count.toLocaleString()} designs live</span></div>
+      </div>
+      <div class="coll-body">
+        <div class="coll-thumbs">${c.items.slice(1,4).map(p=>`<img src="${esc(p.i)}" alt="" loading="lazy" onerror="imgFail(this)">`).join("")}</div>
+        <span class="coll-cta">View collection →</span>
+      </div>
+    </div>`).join("");
+  document.getElementById("carDots").innerHTML = COLLS.map((_,i)=>`<i data-i="${i}" onclick="dotJump(${i})"></i>`).join("");
+  syncDots();
+
+  /* visual search samples + pool size */
+  document.getElementById("sampleRow").innerHTML = SAMPLES.map(f =>
+    `<img src="img/${f}" alt="Sample" onclick="runMatch('img/${f}')">`).join("");
+  document.getElementById("vsPool").textContent = PRODUCTS.filter(p => p.h && p.h.length).length.toLocaleString();
+
+  applyFilters();
+
+  handleDeepLink();
+  window.addEventListener("hashchange", handleDeepLink);
+}
+
+/* deep links:
+     #p=SKU                       → open that product (used by product WhatsApp share)
+     #mb=Name&add=SKU1,SKU2,...   → create/append a moodboard called Name with those SKUs
+                                     (used to hand a curated list from Claude to a browser) */
+function handleDeepLink(){
+  /* IMPORTANT: use the RAW (still-encoded) hash. Some SKUs contain '&' (e.g.
+     "T&M 883916", "M&G 2 7726-5"); decoding first would break URLSearchParams
+     by turning those internal '&' into parameter separators. URLSearchParams
+     does the per-value decoding correctly on its own. */
+  const raw = location.hash || "";
+  if(raw.startsWith("#p=")){
+    const sku = decodeURIComponent(raw.slice(3));
+    if(byId.has(sku)) openProduct(sku);
+  } else if(raw.startsWith("#mb=")){
+    const q = new URLSearchParams(raw.slice(1));
+    const name = (q.get("mb") || "").trim();
+    const skus = (q.get("add") || "").split(",").map(s=>s.trim()).filter(s => byId.has(s));
+    if(name && skus.length){
+      let b = MB.boards.find(x => x.name.toLowerCase() === name.toLowerCase());
+      if(!b){ b = {id:"b"+Date.now(), name, skus:[]}; MB.boards.push(b); }
+      let added = 0;
+      for(const s of skus){ if(!b.skus.includes(s)){ b.skus.push(s); added++; } }
+      MB.active = b.id; saveMB();
+      history.replaceState(null, "", location.pathname);   // don't re-import on refresh
+      toast(added ? `Added ${added} design${added>1?"s":""} to “${b.name}”` : `Already in “${b.name}”`);
+      openMB();
+    }
+  }
+}
+
+function imgFail(el){ el.onerror = null; el.src = IMG_FALLBACK; }
+
+/* ================= HELPERS ================= */
+function stockInfo(p){
+  const n = p.n, u = p.u || "";
+  if(n <= 0) return {label:"No Stock", cls:"out"};
+  if(n < 5)  return {label:"Enquire to Reconfirm", cls:"low"};
+  if(n < 20) return {label:`Under 20 ${u}`.trim(), cls:"low"};
+  return {label:`${Math.floor(n/20)*20}+ ${u}`.trim(), cls:"ok"};
+}
+function cardHTML(p, simPct){
+  const st = stockInfo(p);
+  const altImg = (p.x && p.x[0]) ? `<img class="alt" src="${esc(p.x[0])}" alt="" loading="lazy" onerror="this.remove()">` : "";
+  const sim = simPct != null ? `<span class="sim-badge">${simPct}% match</span>` : "";
+  const tagChips = [
+    p.p ? `<span class="chip">${esc(p.p)}</span>` : "",
+    ...(p.k||[]).map(c => `<span class="chip sand">${esc(c)}</span>`)
+  ].join("");
+  const dots = (p.h || []).slice(0, 4).map(([hex, , name]) =>
+    `<i style="background:${esc(hex)}"${name ? ` data-cn="${esc(name)}"` : ""}></i>`).join("");
+  return `<article class="pcard" data-sku="${esc(p.sku)}">
+    <div class="imgbox">
+      <img class="main" src="${esc(p.i)}" alt="${esc(p.sku)}" loading="lazy" onerror="imgFail(this)">${altImg}${sim}
+      <span class="selbox">✓</span>
+      <button class="quick-add">+ Board</button>
+      <div class="tags">${tagChips}</div>
+    </div>
+    <div class="pinfo">
+      <div class="name">${esc(p.sku)}</div>
+      <div class="meta">${esc(p.t) || "—"}</div>
+      <div class="meta">${esc(p.c) || "—"}</div>
+      <div class="meta">Roll Size: ${esc(p.z) || "—"}</div>
+      <div class="prow">
+        <span class="cdots">${dots}</span>
+        <span class="stock ${st.cls}">${st.label}</span>
+      </div>
+      ${p.r ? `<div class="simcount">View similar designs →</div>` : ""}
+    </div>
+  </article>`;
+}
+
+/* ================= NAV / FRAMES ================= */
+function go(frame){
+  document.querySelectorAll(".frame").forEach(f=>f.classList.remove("active"));
+  document.getElementById("frame-"+frame).classList.add("active");
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("active",b.dataset.frame===frame));
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("#tabs button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.frame)));
+
+/* delegated clicks: quick-add, product cards, gallery thumbs, mosaic tiles, hint chips, collection cards */
+document.addEventListener("click", e => {
+  const qa = e.target.closest(".quick-add");
+  if(qa){ quickAdd(qa.closest(".pcard").dataset.sku); return; }
+  const qb = e.target.closest("[data-quote]");
+  if(qb){ quickAdd(qb.dataset.quote); return; }
+  const th = e.target.closest("#pmThumbs img");
+  if(th){
+    document.getElementById("pmMain").src = th.src;
+    document.querySelectorAll("#pmThumbs img").forEach(t=>t.classList.toggle("cur",t===th));
+    return;
+  }
+  const rm = e.target.closest(".mb-remove");
+  if(rm){
+    const b = boardById(MB.active);
+    if(b){ b.skus = b.skus.filter(s=>s!==rm.dataset.rm); saveMB(); renderMB(); }
+    return;
+  }
+  const sb = e.target.closest(".selbox");
+  if(sb){ toggleCardSel(sb.closest(".pcard").dataset.sku); return; }
+  const card = e.target.closest(".pcard");
+  if(card){ openProduct(card.dataset.sku); return; }
+  const tile = e.target.closest("[data-q]");
+  if(tile){ chipSearch(tile.dataset.q); return; }
+  const cc = e.target.closest(".coll-card");
+  if(cc){ openCollection(cc.dataset.coll); return; }
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape"){
+    if(document.getElementById("lightbox").classList.contains("open")) closeLightbox();
+    else closeProduct();
+  }
+});
+function openLightbox(src){
+  const lb = document.getElementById("lightbox");
+  document.getElementById("lightboxImg").src = src;
+  lb.classList.add("open");
+}
+function closeLightbox(){ document.getElementById("lightbox").classList.remove("open"); }
+
+/* ================= MOODBOARDS ================= */
+/* Multiple project boards, stored locally. Export = structured PDF via the
+   browser's print dialog; share = WhatsApp text summary. */
+const MB_KEY = "wcd_moodboards_v1";
+let MB = JSON.parse(localStorage.getItem(MB_KEY) || '{"boards":[],"active":null}');
+function saveMB(){
+  localStorage.setItem(MB_KEY, JSON.stringify(MB));
+  const n = MB.boards.reduce((a,b)=>a+b.skus.length, 0);
+  const el = document.getElementById("quoteCount");
+  el.textContent = n;
+  el.classList.add("bump"); setTimeout(()=>el.classList.remove("bump"),220);
+}
+function boardById(id){ return MB.boards.find(b=>b.id===id); }
+
+/* ---- chooser (which board?) ---- */
+let pendingSkus = [];
+function quickAdd(sku){ openChooser([sku]); }
+function openChooser(skus){
+  pendingSkus = skus.filter(s=>byId.has(s));
+  if(!pendingSkus.length) return;
+  document.getElementById("chooserSub").textContent =
+    pendingSkus.length === 1 ? pendingSkus[0] : `${pendingSkus.length} products selected`;
+  document.getElementById("chooserBoards").innerHTML = MB.boards.map(b =>
+    `<button class="board-row" onclick="addToBoard('${esc(b.id)}')">
+       ${esc(b.name)} <span class="bcount">${b.skus.length} items</span></button>`).join("") ||
+    `<div class="sub">No moodboards yet — name your first one below.</div>`;
+  document.getElementById("chooser").classList.add("open");
+  document.getElementById("newBoardName").value = "";
+}
+function closeChooser(){ document.getElementById("chooser").classList.remove("open"); }
+function addToBoard(id){
+  const b = boardById(id);
+  if(!b) return;
+  let added = 0;
+  pendingSkus.forEach(s => { if(!b.skus.includes(s)){ b.skus.push(s); added++; } });
+  saveMB(); closeChooser(); clearSelection();
+  toast(added ? `${added} design${added>1?"s":""} added to “${b.name}”`
+              : `Already in “${b.name}”`);
+  if(document.getElementById("mbModal").classList.contains("open")) renderMB();
+}
+function createBoardAndAdd(){
+  const name = document.getElementById("newBoardName").value.trim();
+  if(!name) return;
+  const b = {id: "b" + Date.now(), name, skus: []};
+  MB.boards.push(b); MB.active = b.id;
+  addToBoard(b.id);
+}
+
+/* ---- moodboards panel ---- */
+function openMB(){
+  if(MB.boards.length && !boardById(MB.active)) MB.active = MB.boards[0].id;
+  document.getElementById("mbModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+  renderMB();
+}
+function closeMB(){
+  document.getElementById("mbModal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function renderMB(){
+  const el = document.getElementById("mbBody");
+  if(!el) return;
+  try {
+    /* self-heal a corrupted or legacy MB shape (arrays, strings, missing skus[]).
+       Without this, an old localStorage entry from a previous version of the site
+       renders a blank modal — the "glitchy empty" symptom. */
+    if(!MB || typeof MB !== "object" || !Array.isArray(MB.boards)) MB = {boards:[], active:null};
+    MB.boards = MB.boards.filter(b => b && typeof b === "object")
+                         .map(b => ({id: b.id || ("b"+Math.random().toString(36).slice(2,8)),
+                                     name: (b.name || "Untitled").toString(),
+                                     skus: Array.isArray(b.skus) ? b.skus.filter(s => typeof s === "string") : []}));
+    if(!MB.boards.length){
+      el.innerHTML = `<div class="mb-empty"><b style="display:block;color:var(--em-900);font-size:18px;margin-bottom:6px">No moodboards yet</b>
+        Browse the catalogue and hover any design — “+ Board” starts your first project moodboard.</div>`;
+      return;
+    }
+    const b = boardById(MB.active) || MB.boards[0];
+    MB.active = b.id;
+    const items = b.skus.map(s => byId.get(s)).filter(Boolean);
+    const missing = b.skus.length - items.length;
+    el.innerHTML = `
+      <div class="mb-list">${MB.boards.map(x =>
+        `<button class="mb-tab ${x.id===b.id?"on":""}" onclick="MB.active='${esc(x.id)}';renderMB()">${esc(x.name)} · ${x.skus.length}</button>`).join("")}
+      </div>
+      <div class="mb-actions">
+        <button class="mb-act primary" onclick="exportBoardPDF('${esc(b.id)}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export PDF</button>
+        <button class="mb-act" onclick="shareBoardWA('${esc(b.id)}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>Share via WhatsApp</button>
+        <button class="mb-act" onclick="renameBoard('${esc(b.id)}')">Rename</button>
+        <button class="mb-act danger" onclick="deleteBoard('${esc(b.id)}')">Delete board</button>
+      </div>
+      ${missing ? `<div class="mb-empty" style="padding:10px 0 6px;color:var(--em-700);font-size:13px">Note: ${missing} SKU${missing>1?"s are":" is"} no longer in the live catalogue — hidden from this view.</div>` : ""}
+      ${items.length
+        ? `<div class="pgrid">${items.map(p => cardHTML(p).replace('<div class="imgbox">',
+            `<div class="imgbox"><button class="mb-remove" data-rm="${esc(p.sku)}" title="Remove from board" aria-label="Remove from board"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="pointer-events:none"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`)).join("")}</div>`
+        : `<div class="mb-empty">This board is empty — add designs from Browse or any product page.</div>`}`;
+  } catch(err){
+    console.error("Moodboard render failed:", err);
+    el.innerHTML = `<div class="mb-empty"><b style="display:block;color:#9C3B2E;font-size:16px;margin-bottom:6px">Couldn’t render your moodboards</b>
+      Something odd in the saved data caused an error. Copy this message to Vikash:<br><br>
+      <code style="background:var(--sand-100);padding:6px 10px;border-radius:6px;font-size:12px">${esc(String(err && err.message || err))}</code><br><br>
+      Or reset by clicking <button class="mb-act danger" style="margin-top:6px" onclick="if(confirm('Reset all moodboards? This cannot be undone.')){localStorage.removeItem('wcd_moodboards_v1');location.reload();}">Reset all moodboards</button></div>`;
+  }
+}
+function renameBoard(id){
+  const b = boardById(id);
+  const name = prompt("Rename moodboard:", b.name);
+  if(name && name.trim()){ b.name = name.trim(); saveMB(); renderMB(); }
+}
+function deleteBoard(id){
+  const b = boardById(id);
+  if(!confirm(`Delete “${b.name}” (${b.skus.length} items)?`)) return;
+  MB.boards = MB.boards.filter(x=>x.id!==id);
+  MB.active = MB.boards[0]?.id || null;
+  saveMB(); renderMB();
+}
+
+/* ---- structured PDF export (browser print) ---- */
+function exportPDF(title, skus){
+  const items = skus.map(s=>byId.get(s)).filter(Boolean);
+  if(!items.length){ toast("Nothing to export"); return; }
+  const F = SETTINGS.pdf.fields;
+  const rows = items.map(p => {
+    const st = stockInfo(p);
+    const dots = (p.h||[]).slice(0,4).map(([h])=>`<span class="d" style="background:${esc(h)}"></span>`).join("");
+    const tr = [];
+    if(F.type)       tr.push(`<tr><td>Product Type</td><td>${esc(p.t)||"—"}</td></tr>`);
+    if(F.collection) tr.push(`<tr><td>Collection</td><td>${esc(p.c)||"—"}</td></tr>`);
+    if(F.rollsize)   tr.push(`<tr><td>Roll Size</td><td>${esc(p.z)||"—"}</td></tr>`);
+    if(F.backing)    tr.push(`<tr><td>Backing</td><td>${esc(p.b)||"—"}</td></tr>`);
+    if(F.pattern)    tr.push(`<tr><td>Pattern</td><td>${esc(p.p)||"—"}</td></tr>`);
+    if(F.colours)    tr.push(`<tr><td>Colours</td><td>${(p.k||[]).map(esc).join(", ")||"—"} ${dots}</td></tr>`);
+    if(F.stock)      tr.push(`<tr><td>Availability</td><td>${st.label}</td></tr>`);
+    const rooms = (F.roomimages !== false && p.x && p.x.length)
+      ? `<div class="rooms">${p.x.slice(0,3).map(u=>`<img src="${esc(u)}" alt="" onerror="this.remove()">`).join("")}</div>`
+      : "";
+    return `<div class="card">
+      <img class="swatchimg" src="${esc(p.i)}" alt="">
+      <div class="inf">
+        <div class="sku">${esc(p.sku)}</div>
+        <table>${tr.join("")}</table>
+      </div>
+      ${rooms}
+    </div>`;
+  }).join("");
+  if(SETTINGS.pdf.title) title = SETTINGS.pdf.title + " — " + title;
+  const w = window.open("", "_blank");
+  if(!w){ toast("Please allow pop-ups to export the PDF"); return; }
+  w.document.write(`<!DOCTYPE html><html><head><title>${esc(title)}</title><style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:"Avenir Next","Segoe UI",sans-serif;color:#22302A;padding:28px}
+    header{display:flex;align-items:baseline;gap:12px;border-bottom:3px solid #043D2B;padding-bottom:14px;margin-bottom:22px}
+    header .logo{background:#043D2B;color:#F4EEE1;font-weight:700;padding:4px 10px;border-radius:7px;font-size:17px}
+    header h1{font-size:21px;color:#043D2B}
+    header .date{margin-left:auto;font-size:12px;color:#5C6B63}
+    .grid{display:flex;flex-direction:column;gap:14px}
+    .card{display:flex;align-items:stretch;gap:0;border:1px solid #EADFC9;border-radius:12px;overflow:hidden;break-inside:avoid;page-break-inside:avoid}
+    .card .swatchimg{width:180px;min-width:180px;height:190px;object-fit:cover;display:block;background:#F4EEE1}
+    .inf{flex:0 0 250px;padding:12px 16px}
+    .rooms{flex:1;display:flex;gap:6px;padding:8px;align-items:center;justify-content:flex-end;min-width:0}
+    .rooms img{height:174px;flex:1 1 0;min-width:0;max-width:170px;object-fit:cover;border-radius:8px;background:#F4EEE1}
+    .sku{font-weight:700;font-size:15px;color:#043D2B;margin-bottom:7px}
+    table{width:100%;border-collapse:collapse;font-size:11.5px}
+    td{padding:3.5px 0;border-bottom:1px solid #F4EEE1;vertical-align:top}
+    td:first-child{color:#5C6B63;width:88px}
+    .d{display:inline-block;width:11px;height:11px;border-radius:50%;border:1px solid #ccc;margin-left:3px;vertical-align:-2px}
+    footer{margin-top:22px;font-size:11px;color:#5C6B63;text-align:center}
+    @media print{body{padding:10px}.grid{gap:10px}}
+  </style></head><body>
+    <header><span class="logo">WCD</span><h1>${esc(title)}</h1>
+      <span class="date">${items.length} designs · ${new Date().toLocaleDateString("en-MY",{day:"numeric",month:"short",year:"numeric"})}</span></header>
+    <div class="grid">${rows}</div>
+    <footer>WCD · Wallcoverings, fabrics &amp; interior surfaces · Malaysia — availability correct at export time</footer>
+  </body></html>`);
+  w.document.close();
+  w.addEventListener("load", ()=>setTimeout(()=>w.print(), 600));
+}
+function exportBoardPDF(id){ const b = boardById(id); exportPDF("Moodboard — " + b.name, b.skus); }
+
+/* ---- WhatsApp share ---- */
+function shareWA(title, skus){
+  const items = skus.map(s=>byId.get(s)).filter(Boolean);
+  if(!items.length){ toast("Nothing to share"); return; }
+  const lines = items.map((p,i) => {
+    const st = stockInfo(p);
+    return `${i+1}. ${p.sku} — ${p.t||""}${p.c?" · "+p.c:""}${p.z?" · "+p.z:""} · ${st.label}`;
+  });
+  const text = `*WCD — ${title}*\n${lines.join("\n")}\n\n(${items.length} designs, sent from the WCD Visual Marketplace)`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+}
+function shareBoardWA(id){ const b = boardById(id); shareWA("Moodboard: " + b.name, b.skus); }
+function shareProductWA(sku){
+  const p = byId.get(sku);
+  if(!p) return;
+  const st = stockInfo(p);
+  const link = location.origin + location.pathname + "#p=" + encodeURIComponent(sku);
+  const lines = [`*WCD — ${sku}*`,
+    [p.t, p.c].filter(Boolean).join(" · "),
+    p.z ? `Roll Size: ${p.z}` : "", p.b ? `Backing: ${p.b}` : "",
+    `Availability: ${st.label}`, "", `View design: ${link}`];
+  window.open("https://wa.me/?text=" + encodeURIComponent(lines.filter(l=>l!==null).join("\n")), "_blank");
+}
+
+/* ---- always-on selection ---- */
+const SELECTED = new Set();
+function toggleCardSel(sku){
+  SELECTED.has(sku) ? SELECTED.delete(sku) : SELECTED.add(sku);
+  document.querySelectorAll(`.pcard[data-sku="${CSS.escape(sku)}"]`)
+    .forEach(c => c.classList.toggle("sel", SELECTED.has(sku)));
+  updateSelbar();
+}
+function updateSelbar(){
+  document.getElementById("selCount").textContent = `${SELECTED.size} selected`;
+  document.getElementById("selbar").classList.toggle("show", SELECTED.size > 0);
+}
+function clearSelection(){
+  SELECTED.clear();
+  document.querySelectorAll(".pcard.sel").forEach(c=>c.classList.remove("sel"));
+  updateSelbar();
+}
+function selToBoard(){ openChooser([...SELECTED]); }
+function selExport(){ exportPDF("Product Selection", [...SELECTED]); }
+function selWhatsApp(){ shareWA("Product Selection", [...SELECTED]); }
+saveMB();
+let toastTimer;
+function toast(msg){
+  document.getElementById("toastMsg").textContent = msg;
+  const t = document.getElementById("toast");
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"),2400);
+}
+
+/* ================= SEARCH ================= */
+function heroSearch(ev){
+  ev.preventDefault();
+  chipSearch(document.getElementById("heroQ").value.trim());
+}
+function chipSearch(q){
+  clearFilters(true);
+  applyDefaultTypes();          // searches start from the wallpaper ranges
+  state.query = q;
+  go("browse"); applyFilters();
+}
+
+/* ================= FRAME 2 : FILTERS ================= */
+const state = {patterns:new Set(), colours:new Set(), types:new Set(), collection:"", inStock:false, query:""};
+const DEF_TYPES = new Set();    // wallpaper types, pre-selected by default
+let FILTERED = [], shown = 0;
+const CHUNK = 48;
+
+/* both filter copies (sidebar + top bar) drive the same state and mirror each other */
+function syncInputs(sel, value, checked){
+  document.querySelectorAll(sel).forEach(i => { if(i.value === value) i.checked = checked; });
+}
+function togglePattern(cb){
+  cb.checked ? state.patterns.add(cb.value) : state.patterns.delete(cb.value);
+  syncInputs("#patternFilters input, #patternFiltersTop input", cb.value, cb.checked);
+  applyFilters();
+}
+function toggleType(cb){
+  cb.checked ? state.types.add(cb.value) : state.types.delete(cb.value);
+  syncInputs("#typeFilters input, #typeFiltersTop input", cb.value, cb.checked);
+  applyFilters();
+}
+function toggleColour(btn){
+  const c = btn.dataset.c;
+  state.colours.has(c) ? state.colours.delete(c) : state.colours.add(c);
+  document.querySelectorAll(`#colourFilters .swatch[data-c="${CSS.escape(c)}"], #colourFiltersTop .swatch[data-c="${CSS.escape(c)}"]`)
+    .forEach(s => s.classList.toggle("sel", state.colours.has(c)));
+  applyFilters();
+}
+function toggleInStock(cb){
+  state.inStock = cb.checked;
+  document.querySelectorAll("input[data-instock]").forEach(i => i.checked = cb.checked);
+  applyFilters();
+}
+function applyDefaultTypes(){
+  state.types = new Set(DEF_TYPES);
+  DEF_TYPES.forEach(t => syncInputs("#typeFilters input, #typeFiltersTop input", t, true));
+}
+function typesAreDefault(){
+  return state.types.size === DEF_TYPES.size && [...state.types].every(t => DEF_TYPES.has(t));
+}
+function clearFilters(silent){
+  state.patterns.clear(); state.colours.clear(); state.types.clear();
+  state.collection=""; state.inStock=false; state.query="";
+  document.querySelectorAll("#patternFilters input, #patternFiltersTop input, #typeFilters input, #typeFiltersTop input").forEach(i=>i.checked=false);
+  document.querySelectorAll("#colourFilters .swatch, #colourFiltersTop .swatch").forEach(s=>s.classList.remove("sel"));
+  document.querySelectorAll("input[data-instock]").forEach(i=>i.checked=false);
+  if(!silent) applyFilters();
+}
+function removeQuery(){ state.query=""; applyFilters(); }
+function removeCollection(){ state.collection=""; applyFilters(); }
+function toggleFilters(open){ document.getElementById("filtersPanel").classList.toggle("open",open); }
+function toggleDrop(btn){
+  const d = btn.parentElement;
+  document.querySelectorAll(".fdrop.open").forEach(x => { if(x!==d) x.classList.remove("open"); });
+  d.classList.toggle("open");
+}
+document.addEventListener("click", e => {
+  if(!e.target.closest(".fdrop")) document.querySelectorAll(".fdrop.open").forEach(d=>d.classList.remove("open"));
+}, true);
+
+function applyFilters(){
+  const q = state.query.toLowerCase();
+  FILTERED = PRODUCTS.filter(p => {
+    if(state.patterns.size && !state.patterns.has(p.p)) return false;
+    if(state.colours.size && !(p.k||[]).some(c => state.colours.has(c))) return false;
+    if(state.types.size && !state.types.has(p.t)) return false;
+    if(state.collection && p.c !== state.collection) return false;
+    if(state.inStock && p.n <= 0) return false;
+    if(q && !((p.sku+" "+p.t+" "+p.c+" "+p.p+" "+(p.k||[]).join(" ")).toLowerCase().includes(q))) return false;
+    return true;
+  });
+  const sort = document.getElementById("sortSel").value;
+  if(sort === "newest") FILTERED = [...FILTERED].sort((a,b)=>b._i-a._i);
+  if(sort === "sku") FILTERED = [...FILTERED].sort((a,b)=>a.sku.localeCompare(b.sku));
+  if(sort === "stock") FILTERED = [...FILTERED].sort((a,b)=>b.n-a.n);
+
+  shown = 0;
+  document.getElementById("browseGrid").innerHTML = "";
+  loadMore();
+
+  document.getElementById("resultCount").textContent =
+    `${FILTERED.length.toLocaleString()} design${FILTERED.length===1?"":"s"}`;
+  document.getElementById("emptyState").style.display = FILTERED.length ? "none" : "block";
+
+  const chips = [];
+  if(state.query) chips.push(`<span class="achip">“${esc(state.query)}” <button onclick="removeQuery()">×</button></span>`);
+  if(state.collection) chips.push(`<span class="achip">${esc(state.collection)} <button onclick="removeCollection()">×</button></span>`);
+  state.patterns.forEach(pt=>chips.push(`<span class="achip">${esc(pt)} <button data-drop-pattern="${esc(pt)}">×</button></span>`));
+  if(state.types.size && typesAreDefault()){
+    chips.push(`<span class="achip">All wallpapers <button data-drop-deftypes="1" title="Show every product type">×</button></span>`);
+  } else {
+    state.types.forEach(t=>chips.push(`<span class="achip">${esc(t)} <button data-drop-type="${esc(t)}">×</button></span>`));
+  }
+  state.colours.forEach(c=>chips.push(`<span class="achip">${esc(c)} <button data-drop-colour="${esc(c)}">×</button></span>`));
+  document.getElementById("activeChips").innerHTML = chips.join("");
+
+  /* top-bar badges mirror the active counts */
+  const badge = (k,n)=>{ const b=document.querySelector(`[data-badge="${k}"]`); if(b){ b.textContent=n; b.classList.toggle("has",n>0); } };
+  badge("patterns", state.patterns.size);
+  badge("colours", state.colours.size);
+  badge("types", state.types.size);
+}
+document.getElementById("activeChips").addEventListener("click", e => {
+  const b = e.target;
+  if(b.dataset.dropPattern !== undefined){
+    state.patterns.delete(b.dataset.dropPattern);
+    syncInputs("#patternFilters input, #patternFiltersTop input", b.dataset.dropPattern, false);
+    applyFilters();
+  } else if(b.dataset.dropType !== undefined){
+    state.types.delete(b.dataset.dropType);
+    syncInputs("#typeFilters input, #typeFiltersTop input", b.dataset.dropType, false);
+    applyFilters();
+  } else if(b.dataset.dropColour !== undefined){
+    state.colours.delete(b.dataset.dropColour);
+    document.querySelectorAll(`#colourFilters .swatch[data-c="${CSS.escape(b.dataset.dropColour)}"], #colourFiltersTop .swatch[data-c="${CSS.escape(b.dataset.dropColour)}"]`)
+      .forEach(sw=>sw.classList.remove("sel"));
+    applyFilters();
+  } else if(b.dataset.dropDeftypes !== undefined){
+    state.types.clear();
+    document.querySelectorAll("#typeFilters input, #typeFiltersTop input").forEach(i=>i.checked=false);
+    applyFilters();
+  }
+});
+
+function loadMore(){
+  const next = FILTERED.slice(shown, shown + CHUNK);
+  shown += next.length;
+  document.getElementById("browseGrid").insertAdjacentHTML("beforeend", next.map(p=>cardHTML(p)).join(""));
+  document.getElementById("loadMore").style.display = shown < FILTERED.length ? "block" : "none";
+  document.getElementById("loadMore").textContent =
+    `Load more designs (${(FILTERED.length - shown).toLocaleString()} remaining)`;
+}
+/* auto-load next chunk when the button scrolls into view */
+new IntersectionObserver(entries => {
+  if(entries[0].isIntersecting && shown < FILTERED.length) loadMore();
+}, {rootMargin:"600px"}).observe(document.getElementById("loadMore"));
+
+/* ================= FRAME 3 : CAROUSEL ================= */
+const car = document.getElementById("carousel");
+const carCards = ()=>[...car.querySelectorAll(".coll-card")];
+const cardStep = ()=>carCards()[0].offsetWidth + 22;
+function carIndex(){
+  const n = carCards().length;
+  return Math.min(n-1, Math.max(0, Math.round(car.scrollLeft/cardStep())));
+}
+function dotJump(i){
+  const left = carCards()[i].offsetLeft - 20;
+  const from = car.scrollLeft;
+  car.scrollTo({left, behavior:"smooth"});
+  setTimeout(()=>{
+    if(Math.abs(car.scrollLeft-from)<2 && Math.abs(from-left)>2) car.scrollLeft = left;
+    syncDots();
+  },260);
+}
+function slideCarousel(dir){
+  const n = carCards().length;
+  dotJump(Math.min(n-1, Math.max(0, carIndex()+dir)));
+}
+function syncDots(){
+  if(!carCards().length) return;
+  const i = carIndex();
+  document.querySelectorAll("#carDots i").forEach((d,k)=>d.classList.toggle("on",k===i));
+}
+car.addEventListener("scroll",syncDots,{passive:true});
+
+function openCollection(name){
+  clearFilters(true);
+  state.collection = name;
+  go("browse");
+  applyFilters();
+}
+
+/* ================= PRODUCT PAGE ================= */
+const byId = new Map();
+let RECS = null, recsPromise = null, pmStack = [];
+function ensureRecs(){
+  if(recsPromise) return recsPromise;
+  recsPromise = fetch("recs.json?v=" + Date.now())
+    .then(r => r.ok ? r.json() : {})
+    .then(d => { RECS = d; return d; })
+    .catch(() => { RECS = {}; return {}; });
+  return recsPromise;
+}
+function openProduct(sku){
+  if(!byId.has(sku)) return;
+  pmStack.push(sku);
+  renderProduct(sku);
+}
+function productBack(){
+  if(pmStack.length > 1){ pmStack.pop(); renderProduct(pmStack[pmStack.length-1]); }
+}
+function closeProduct(){
+  pmStack = [];
+  document.getElementById("pmodal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function renderProduct(sku){
+  const p = byId.get(sku);
+  const st = stockInfo(p);
+  const imgs = [p.i, ...(p.x || [])];
+  document.getElementById("pmodal").classList.add("open");
+  document.body.style.overflow = "hidden";
+  document.getElementById("pmBackBtn").style.display = pmStack.length > 1 ? "" : "none";
+  const el = document.getElementById("pmBody");
+  el.innerHTML = `
+   <div class="pm-grid">
+    <div class="pm-gallery">
+      <div class="pm-main"><img id="pmMain" src="${esc(imgs[0])}" alt="${esc(p.sku)}" onerror="imgFail(this)" onclick="openLightbox(this.src)" title="Click to enlarge"></div>
+      ${imgs.length>1 ? `<div class="pm-thumbs" id="pmThumbs">${imgs.map((u,i)=>
+        `<img src="${esc(u)}" class="${i===0?"cur":""}" alt="" onerror="this.remove()">`).join("")}</div>` : ""}
+    </div>
+    <div class="pm-info">
+      <h2>${esc(p.sku)}</h2>
+      <div class="pm-chips">
+        ${p.p ? `<span class="chip">${esc(p.p)}</span>` : ""}
+        ${(p.k||[]).map(c=>`<span class="chip sand" style="border:1px solid var(--sand-200)">${esc(c)}</span>`).join("")}
+      </div>
+      <div class="pm-rows">
+        <div class="pm-row"><span>Product Type</span><span>${esc(p.t) || "—"}</span></div>
+        <div class="pm-row"><span>Collection</span><span>${esc(p.c) || "—"}</span></div>
+        <div class="pm-row"><span>Roll Size</span><span>${esc(p.z) || "—"}</span></div>
+        ${p.b ? `<div class="pm-row"><span>Backing</span><span>${esc(p.b)}</span></div>` : ""}
+        <div class="pm-row"><span>Availability</span><span class="stock ${st.cls}">${st.label}</span></div>
+      </div>
+      ${p.n < 5 ? `<div class="pm-lowstock ${p.n<=0?"out":""}">${p.n<=0 ? "This design is out of stock" : "Stock is low on this design"} — the similar designs below are alternatives your client can get right away.</div>` : ""}
+      <button class="pm-quote" data-quote="${esc(p.sku)}">+ Add to Moodboard</button>
+      <div class="pm-share">
+        <button class="mb-act" onclick="shareProductWA('${esc(p.sku)}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>WhatsApp</button>
+        <button class="mb-act" onclick="exportPDF('${esc(p.sku)}', ['${esc(p.sku)}'])"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export PDF</button>
+      </div>
+    </div>
+   </div>
+   <div id="pmSims"><div class="pm-empty">Finding similar designs…</div></div>`;
+  el.closest(".pmodal-panel").scrollTop = 0;
+  ensureRecs().then(() => renderSims(p));
+}
+function simGrid(list){
+  return `<div class="pgrid">${list.map(([s,pc]) => byId.has(s) ? cardHTML(byId.get(s), pc) : "").join("")}</div>`;
+}
+/* Similar-designs mode: 'both' (colour + pattern, default), 'pattern', 'colour'.
+   Recomputed in the browser from the shipped fingerprint index + colour palettes,
+   so the same design can be matched by look, by colour, or by both together. */
+const TYPE_FAMILY = {};
+[["Wallcoverings",["European Wallpaper","Asian Wallpaper","Korean Wallpaper","Korean Wallpaper - 21\"","KIDS Wallpaper","Photomural Wallpaper","Photomural Disney Wallpaper","Contract Wallpaper","Fabric Backed Wallpaper","Custom Print"]],
+ ["Fabrics",["Curtain Fabric","Curtain Fabric, Dim Out","Dim Out","Velour Fabric","Upholstery","Fabric"]],
+ ["Vinyl Sheet",["Vinyl Sheet"]],
+ ["Stickers",["Decorative Sticker","Wallpaper Sticker","Architectural Sticker"]]
+].forEach(([fam,types]) => types.forEach(t => TYPE_FAMILY[t] = fam));
+let SIM_MODE = "both";
+
+/* Convert a raw weighted-RGB colour distance to an absolute % score.
+   Calibrated against the real distance distribution — <5 = identical, ~30 is p5,
+   ~70 = clearly different. So a marble in the same beige can't score "99%" —
+   the number reflects true colour closeness, not just rank. */
+function colourPct(d){
+  if(d <= 5)   return Math.round(99 - (d/5)*4);          // 99 → 95
+  if(d <= 15)  return Math.round(95 - ((d-5)/10)*10);    // 95 → 85
+  if(d <= 30)  return Math.round(85 - ((d-15)/15)*15);   // 85 → 70
+  if(d <= 60)  return Math.round(70 - ((d-30)/30)*20);   // 70 → 50
+  return Math.max(35, Math.round(50 - (d-60)/8));
+}
+function cosPct(c){ return Math.max(35, Math.min(99, Math.round(c*100))); }
+
+function computeSims(p, mode){
+  const qCols = qColsWeighted((p.h || []).map(([hex, share]) => ({rgb: hexRGB(hex), share})));
+  const scored = [];   // {p, s, pct, keep}
+  const n = EMB_SKUS ? EMB_SKUS.length : 0;
+  const embReady = !!(EMB && EMB_IDX && EMB_IDX.has(p.sku));
+  const cos = embReady ? clipScores(EMB.subarray(EMB_IDX.get(p.sku)*EMB_DIM, (EMB_IDX.get(p.sku)+1)*EMB_DIM)) : null;
+
+  /* Class-first similarity: matches must belong to the same pattern class as
+     the query (e.g. Plain → only Plains). CLIP has no clean threshold to tell
+     a marble from a linen when both are beige, so we trust the pattern tags
+     as the class filter and use CLIP for ranking WITHIN the class. If either
+     side is untagged we don't gate on class (better to show something). */
+  const sameClass = c => !p.p || !c.p || c.p === p.p;
+
+  if(mode === "colour"){
+    for(const c of PRODUCTS){
+      if(c.sku === p.sku || !c.h || !c.h.length) continue;
+      const d = colourDist(c, qCols);
+      scored.push({p:c, s: -d, pct: colourPct(d), keep: sameClass(c)});
+    }
+  } else if(embReady && mode === "pattern"){
+    for(let i=0;i<n;i++){
+      const c = byId.get(EMB_SKUS[i]); if(!c || c.sku === p.sku) continue;
+      scored.push({p:c, s: cos[i], pct: cosPct(cos[i]), keep: sameClass(c) && cos[i] >= 0.55});
+    }
+  } else if(embReady){                 /* both — visual + colour together */
+    for(let i=0;i<n;i++){
+      const c = byId.get(EMB_SKUS[i]); if(!c || c.sku === p.sku) continue;
+      const d = (c.h && c.h.length) ? colourDist(c, qCols) : 999;
+      const cp = colourPct(d) / 100, vp = Math.max(0, cos[i]);
+      const blend = 0.6*vp + 0.4*cp;
+      scored.push({p:c, s: blend, pct: Math.round(blend*100), keep: sameClass(c) && cos[i] >= 0.55});
+    }
+  } else {
+    return null;   // fingerprints still loading for pattern/both — caller shows recs.json + retries
+  }
+
+  /* Prefer gated matches; if a section has fewer than 4 gated, fall back to
+     ungated with a small pct penalty so the fallback is visibly weaker. */
+  scored.sort((a,b) => b.s - a.s);
+  const fam = TYPE_FAMILY[p.t], same = [], other = [], sameFB = [], otherFB = [];
+  for(const it of scored){
+    const isSame = it.p.t === p.t;
+    const isFam  = !isSame && fam && TYPE_FAMILY[it.p.t] === fam;
+    if(!isSame && !isFam) continue;
+    const bucket = isSame ? (it.keep ? same : sameFB) : (it.keep ? other : otherFB);
+    if(bucket.length < 8) bucket.push([it.p.sku, it.keep ? it.pct : Math.max(35, it.pct - 12)]);
+    if(same.length >= 8 && other.length >= 8) break;
+  }
+  while(same.length < 4 && sameFB.length){ same.push(sameFB.shift()); }
+  while(other.length < 4 && otherFB.length){ other.push(otherFB.shift()); }
+  return {same, other};
+}
+function setSimMode(m){
+  SIM_MODE = m;
+  const sku = pmStack[pmStack.length-1];
+  if(sku) renderSims(byId.get(sku));
+}
+function renderSims(p){
+  if(!p || pmStack[pmStack.length-1] !== p.sku) return;
+  const box = document.getElementById("pmSims");
+  if(!box) return;
+  let sims = computeSims(p, SIM_MODE), loading = false;
+  if(!sims){                       // fingerprints still loading → show precomputed baseline, then upgrade
+    const r = (RECS || {})[p.sku];
+    sims = r ? {same: r.s || [], other: r.f || []} : {same: [], other: []};
+    loading = true;
+    loadEmbIndex().then(ok => { if(ok && pmStack[pmStack.length-1] === p.sku) renderSims(p); });
+  }
+  const note = SIM_MODE === "both" ? "Closest by look and colour together."
+             : SIM_MODE === "pattern" ? "Closest by pattern &amp; texture — any colour."
+             : "Closest by colour — any pattern.";
+  const toggle = `<div class="sim-toggle">
+    <span class="vs-lbl">Closest by</span>
+    <div class="vs-seg">
+      <button class="sim-eng ${SIM_MODE==='both'?'on':''}" data-eng="both" onclick="setSimMode('both')">Colour + Pattern</button>
+      <button class="sim-eng ${SIM_MODE==='pattern'?'on':''}" data-eng="pattern" onclick="setSimMode('pattern')">Pattern</button>
+      <button class="sim-eng ${SIM_MODE==='colour'?'on':''}" data-eng="colour" onclick="setSimMode('colour')">Colour</button>
+    </div>
+    ${loading ? '<span class="sim-loading">refining…</span>' : ''}
+  </div>`;
+  let html = toggle;
+  if(!sims.same.length && !sims.other.length){
+    html += `<div class="pm-empty">No close matches on file for this design yet.</div>`;
+  } else {
+    if(sims.same.length) html += `<div class="pm-sim"><h3>Similar ${esc(p.t || "designs")}</h3><div class="sub">${note} Same product type.</div>${simGrid(sims.same)}</div>`;
+    if(sims.other.length) html += `<div class="pm-sim"><h3>Same look, other materials</h3><div class="sub">${note} Related product types.</div>${simGrid(sims.other)}</div>`;
+  }
+  box.innerHTML = html;
+}
+
+/* ================= FRAME 4 : VISUAL SEARCH ================= */
+/* Matches the uploaded photo's dominant colours against each product's
+   precomputed colour palette (from the CLIP scan database). */
+const SAMPLES = ["mg-7712-a.jpg","mg-7736-a.jpg","mg-7721-a.jpg","mg-7728-a.jpg","mg-7723-a.jpg"];
+
+function hexRGB(h){ return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
+function rgbDist(a,b){
+  /* weighted RGB — decent perceptual approximation, cheap enough for 19k products */
+  const dr=a[0]-b[0], dg=a[1]-b[1], db=a[2]-b[2], r=(a[0]+b[0])/2;
+  return Math.sqrt((2+r/256)*dr*dr + 4*dg*dg + (2+(255-r)/256)*db*db);
+}
+function dominantColours(imgSrc){
+  return new Promise((res,rej)=>{
+    const im = new Image();
+    im.onload = ()=>{
+      const cv = document.createElement("canvas"); cv.width=cv.height=64;
+      cv.getContext("2d").drawImage(im,0,0,64,64);
+      const d = cv.getContext("2d").getImageData(0,0,64,64).data;
+      const bins = new Map();
+      for(let i=0;i<d.length;i+=4){
+        const key = (d[i]>>5)+","+(d[i+1]>>5)+","+(d[i+2]>>5);
+        const b = bins.get(key) || [0,0,0,0];
+        b[0]+=d[i]; b[1]+=d[i+1]; b[2]+=d[i+2]; b[3]++;
+        bins.set(key,b);
+      }
+      const total = d.length/4;
+      const top = [...bins.values()].sort((a,b)=>b[3]-a[3]).slice(0,3)
+        .map(b=>({rgb:[b[0]/b[3], b[1]/b[3], b[2]/b[3]], share:b[3]/total}));
+      let lsum=0, l2=0;
+      for(let i=0;i<d.length;i+=4){
+        const l=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+        lsum+=l; l2+=l*l;
+      }
+      top.variance = Math.sqrt(Math.max(0, l2/total - (lsum/total)**2));
+      res(top);
+    };
+    im.onerror = rej;
+    im.src = imgSrc;
+  });
+}
+function nearestParent(rgb){
+  let best=null, bd=1e9;
+  for(const [name,hex] of Object.entries(PARENT_HEX)){
+    const d = rgbDist(rgb, hexRGB(hex));
+    if(d<bd){ bd=d; best=name; }
+  }
+  return best;
+}
+/* engine: 'both' = visual + colour blend (default), 'ai' = pure visual,
+   'colour' = colour-signature only */
+let VS_ENGINE = "both", VS_LIST = null, QUERY_SRC = null;
+
+/* CLIP visual model — the SAME fingerprint that powers product-page "similar
+   designs". Loaded from a CDN on first use (~90 MB, then browser-cached), so
+   uploads are ranked by how the design LOOKS (pattern + texture + colour),
+   not just its colour. Falls back to colour matching if the model can't load. */
+const CLIP_MODEL = "Xenova/clip-vit-base-patch32";
+const TF_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
+let TF = null, clipProc = null, clipVis = null;
+let EMB = null, EMB_SKUS = null, EMB_DIM = 0, EMB_IDX = null, embPromise = null;
+let clipStatus = "idle", clipPromise = null;   // idle|loading|ready|failed
+
+/* the 9.6 MB fingerprint index alone (no 90 MB AI model) — enough to rank one
+   catalogue design against every other, used by the product-page "similar" toggle */
+async function loadEmbIndex(){
+  if(EMB) return true;
+  if(embPromise) return embPromise;
+  embPromise = (async () => {
+    const v = Date.now();
+    const meta = await (await fetch("visual/emb.json?v=" + v)).json();
+    const buf  = await (await fetch("visual/emb.bin?v=" + v)).arrayBuffer();
+    const q = new Int8Array(buf); EMB_DIM = meta.dim; EMB_SKUS = meta.skus;
+    EMB_IDX = new Map(EMB_SKUS.map((s,i) => [s, i]));
+    const inv = 1/meta.scale; EMB = new Float32Array(q.length);
+    for(let i=0;i<q.length;i++) EMB[i] = q[i]*inv;
+    const pool = document.getElementById("vsPool"); if(pool) pool.textContent = EMB_SKUS.length.toLocaleString();
+    return true;
+  })().catch(e => { console.error("Fingerprint index load failed:", e); embPromise = null; return false; });
+  return embPromise;
+}
+
+function setVSStatus(text, pct){
+  document.getElementById("qStatus").textContent = text;
+  if(pct != null) document.getElementById("scanFill").style.width = pct + "%";
+}
+function syncEngineBtns(){
+  document.querySelectorAll(".vs-eng").forEach(b => b.classList.toggle("on", b.dataset.eng === VS_ENGINE));
+}
+function clipProgress(p){
+  if(p && p.status === "progress" && p.total)
+    setVSStatus(`Loading the visual AI (one-time) — ${Math.min(99,Math.round(p.loaded/p.total*100))}% …`,
+                Math.min(96, 20 + Math.round(p.loaded/p.total*70)));
+}
+async function loadCLIP(){
+  if(clipStatus === "ready") return true;
+  if(clipStatus === "loading") return clipPromise;
+  clipStatus = "loading";
+  clipPromise = (async () => {
+    setVSStatus("Starting the visual AI (one-time ~90 MB download)…", 15);
+    TF = await import(TF_URL);
+    TF.env.allowLocalModels = false;
+    clipProc = await TF.AutoProcessor.from_pretrained(CLIP_MODEL);
+    clipVis  = await TF.CLIPVisionModelWithProjection.from_pretrained(CLIP_MODEL, {dtype:"q8", progress_callback: clipProgress});
+    setVSStatus("Loading catalogue fingerprints…", 97);
+    await loadEmbIndex();
+    clipStatus = "ready"; return true;
+  })().catch(e => { console.error("Visual AI load failed:", e); clipStatus = "failed"; return false; });
+  return clipPromise;
+}
+async function clipEmbed(src){
+  const img = await TF.RawImage.read(src);
+  const out = await clipVis(await clipProc(img));
+  const v = out.image_embeds.data;
+  let n = 0; for(let i=0;i<v.length;i++) n += v[i]*v[i]; n = Math.sqrt(n) || 1;
+  const u = new Float32Array(v.length); for(let i=0;i<v.length;i++) u[i] = v[i]/n;
+  return u;
+}
+function clipScores(q){
+  /* cosine of the query against every catalogue fingerprint, in EMB_SKUS order */
+  const n = EMB_SKUS.length, dim = EMB_DIM, cos = new Float32Array(n);
+  for(let i=0;i<n;i++){ let s=0, o=i*dim; for(let d=0;d<dim;d++) s += EMB[o+d]*q[d]; cos[i] = s; }
+  return cos;
+}
+function chroma(rgb){ const mx = Math.max(rgb[0],rgb[1],rgb[2]), mn = Math.min(rgb[0],rgb[1],rgb[2]); return mx ? (mx-mn)/mx : 0; }
+function qColsWeighted(list){
+  /* boost the query's CHROMATIC colours over its neutral ground (white/grey/beige),
+     so "colour" means the design's actual hue, not its light backing threads */
+  return list.map(c => ({rgb: c.rgb, share: (c.share || 0.2) * (0.25 + chroma(c.rgb))}));
+}
+function colourDist(p, qCols){
+  /* distance from the QUERY's colours to the product's palette, weighted by the
+     query's (chroma-boosted) shares — so the query's dominant HUE matters most and
+     a brown design isn't diluted by its minor light threads (lower = closer). */
+  let score = 0, w = 0;
+  for(const qc of qCols){
+    let dmin = 1e9;
+    for(const ph of p.h){ const d = rgbDist(qc.rgb, hexRGB(ph[0])); if(d < dmin) dmin = d; }
+    const wt = qc.share || .2; score += dmin * wt; w += wt;
+  }
+  return score / (w || 1);
+}
+function setVSEngine(e){
+  if(VS_ENGINE === e) return;
+  VS_ENGINE = e; syncEngineBtns();
+  if(QUERY_SRC) runMatch(QUERY_SRC);
+}
+function colourScoreAll(qCols){
+  const scored = [];
+  for(const p of PRODUCTS){
+    if(!p.h || !p.h.length) continue;
+    let score = 0, wsum = 0;
+    for(const [hex, share] of p.h){
+      const prgb = hexRGB(hex);
+      let dmin = 1e9;
+      for(const qc of qCols) dmin = Math.min(dmin, rgbDist(prgb, qc.rgb));
+      score += dmin * (share || .2);
+      wsum += (share || .2);
+    }
+    scored.push([score/(wsum||1), p]);
+  }
+  scored.sort((a,b)=>a[0]-b[0]);
+  return scored;
+}
+async function runMatch(src){
+  const box = document.getElementById("vsResult");
+  box.classList.add("show");
+  box.scrollIntoView({behavior:"smooth", block:"start"});
+  QUERY_SRC = src;
+  document.getElementById("qImg").src = src;
+  document.getElementById("qTags").innerHTML = "";
+  document.getElementById("vsGrid").innerHTML = "";
+  setVSStatus("Analysing image…", 12);
+
+  if(VS_ENGINE === "ai" || VS_ENGINE === "both"){
+    const ok = await loadCLIP();
+    if(ok){
+      try{
+        setVSStatus("Reading the design…", 98);
+        const q = await clipEmbed(src);
+        const cos = clipScores(q);
+        const cols = await dominantColours(src);
+        const n = EMB_SKUS.length;
+        if(VS_ENGINE === "both"){
+          /* blend visual (60%) + absolute colour closeness (40%) so % is honest */
+          const wCols = qColsWeighted(cols);
+          const items = [];
+          for(let i=0;i<n;i++){
+            const p = byId.get(EMB_SKUS[i]); if(!p) continue;
+            const d = (p.h && p.h.length) ? colourDist(p, wCols) : 999;
+            const cp = colourPct(d) / 100, vp = Math.max(0, cos[i]);
+            const blend = 0.6*vp + 0.4*cp;
+            items.push({p, b: blend, pct: Math.round(blend*100)});
+          }
+          items.sort((a,b)=>b.b-a.b);
+          VS_LIST = items.map(x => ({p:x.p, pct:x.pct}));
+          setVSStatus("Visual + colour match complete — closest by look & colour:", 100);
+        } else {
+          const items = [];
+          for(let i=0;i<n;i++){ const p = byId.get(EMB_SKUS[i]); if(p) items.push({p, cos:cos[i], pct: cosPct(cos[i])}); }
+          items.sort((a,b)=>b.cos-a.cos);
+          VS_LIST = items.map(x => ({p:x.p, pct: x.pct}));
+          setVSStatus("Visual match complete — closest designs by look:", 100);
+        }
+        const names = [...new Set(cols.map(c=>nearestParent(c.rgb)))];
+        document.getElementById("qTags").innerHTML =
+          `<span class="chip" style="background:var(--em-500)">${VS_ENGINE==="both"?"Visual + colour":"Visual AI"} match</span>` +
+          names.map(n=>`<span class="chip" style="background:var(--em-700)">${esc(n)}</span>`).join("");
+        renderVS();
+        return;
+      }catch(e){ console.error(e); toast("Visual match hit a snag — switching to colour"); }
+    } else {
+      toast("Visual AI unavailable — showing colour matches instead");
+    }
+    VS_ENGINE = "colour"; syncEngineBtns();
+  }
+
+  /* colour-signature fallback — absolute % so 99% means genuinely close in colour */
+  const cols = await dominantColours(src);
+  const scored = colourScoreAll(cols);
+  VS_LIST = scored.map(([d,p]) => ({p, pct: colourPct(d)}));
+  setVSStatus("Colour match complete — detected:", 100);
+  const names = [...new Set(cols.map(c=>nearestParent(c.rgb)))];
+  document.getElementById("qTags").innerHTML =
+    `<span class="chip" style="background:var(--em-700)">Colour match</span>` +
+    names.map(n=>`<span class="chip" style="background:var(--em-700)">${esc(n)}</span>`).join("");
+  renderVS();
+}
+/* Visual-search result filters — the same Pattern / Colour / Product Type /
+   In-stock controls as Browse, applied to the visually-ranked list WITHOUT
+   changing its order (closest-look-first is preserved). */
+const vsF = {patterns:new Set(), colours:new Set(), types:new Set(), inStock:false};
+function vsBadge(k,n){ const b=document.querySelector(`[data-vsbadge="${k}"]`); if(b){ b.textContent=n; b.classList.toggle("has",n>0); } }
+function vsTogglePattern(cb){ cb.checked ? vsF.patterns.add(cb.value) : vsF.patterns.delete(cb.value); renderVS(); }
+function vsToggleType(cb){ cb.checked ? vsF.types.add(cb.value) : vsF.types.delete(cb.value); renderVS(); }
+function vsToggleColour(btn){
+  const c = btn.dataset.c;
+  vsF.colours.has(c) ? vsF.colours.delete(c) : vsF.colours.add(c);
+  btn.classList.toggle("sel");
+  renderVS();
+}
+function vsToggleInStock(cb){ vsF.inStock = cb.checked; renderVS(); }
+function vsClearFilters(){
+  vsF.patterns.clear(); vsF.colours.clear(); vsF.types.clear(); vsF.inStock = false;
+  document.querySelectorAll("#vsPatternFilters input, #vsTypeFilters input").forEach(i=>i.checked=false);
+  document.querySelectorAll("#vsColourFilters .swatch").forEach(s=>s.classList.remove("sel"));
+  const is = document.getElementById("vsInStock"); if(is) is.checked = false;
+  renderVS();
+}
+function renderVS(){
+  if(!VS_LIST) return;
+  let list = VS_LIST;
+  if(vsF.patterns.size) list = list.filter(x => vsF.patterns.has(x.p.p));
+  if(vsF.colours.size)  list = list.filter(x => (x.p.k||[]).some(c => vsF.colours.has(c)));
+  if(vsF.types.size)    list = list.filter(x => vsF.types.has(x.p.t));
+  if(vsF.inStock)       list = list.filter(x => x.p.n > 0);
+  vsBadge("patterns", vsF.patterns.size); vsBadge("colours", vsF.colours.size); vsBadge("types", vsF.types.size);
+  const top = list.slice(0, 24);
+  const showing = document.getElementById("vsShowing");
+  if(showing) showing.textContent =
+    `Showing the ${top.length} closest of ${list.length.toLocaleString()} matching design${list.length===1?"":"s"}`;
+  document.getElementById("vsGrid").innerHTML = top.length
+    ? top.map(x => cardHTML(x.p, x.pct)).join("")
+    : `<div class="pm-empty">No close matches with those filters — try removing one.</div>`;
+}
+function handleFile(file){
+  if(!file || !file.type.startsWith("image/")) return;
+  const rd = new FileReader();
+  rd.onload = e => runMatch(e.target.result);
+  rd.readAsDataURL(file);
+}
+const dz = document.getElementById("dropzone");
+["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag");}));
+["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag");}));
+dz.addEventListener("drop",e=>handleFile(e.dataTransfer.files[0]));
+</script>
+</body>
+</html>

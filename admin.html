@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCD Marketplace — Admin</title>
+<style>
+  :root{
+    --em-950:#03301F;--em-900:#043D2B;--em-700:#065F46;--em-500:#0E7A54;--em-300:#5FA98C;--em-100:#DCEBE3;
+    --sand-50:#FAF7F0;--sand-100:#F4EEE1;--sand-200:#EADFC9;--sand-300:#DCCCA9;
+    --ink:#22302A;--ink-soft:#5C6B63;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Avenir Next","Segoe UI",-apple-system,sans-serif;background:var(--sand-50);color:var(--ink);line-height:1.5}
+  h1,h2,h3{font-family:"New York","Iowan Old Style",Georgia,serif;color:var(--em-900)}
+  .wrap{max-width:880px;margin:0 auto;padding:24px 20px 80px}
+  .topbar{background:var(--em-950);color:var(--sand-100);padding:14px 0}
+  .topbar .wrap{padding:0 20px;display:flex;align-items:center;gap:12px}
+  .topbar .mark{background:var(--sand-200);color:var(--em-900);font-weight:700;padding:4px 10px;border-radius:8px}
+  .topbar a{color:var(--em-300);margin-left:auto;font-size:14px;text-decoration:none}
+  .card{background:#fff;border:1px solid var(--sand-200);border-radius:16px;padding:24px;margin-top:22px}
+  .card h2{font-size:20px;margin-bottom:4px}
+  .card .sub{font-size:13.5px;color:var(--ink-soft);margin-bottom:18px}
+  label.f{display:block;font-size:13px;font-weight:600;color:var(--em-700);margin:14px 0 5px}
+  input[type=text],input[type=password],select{
+    width:100%;padding:11px 13px;border-radius:11px;border:1.5px solid var(--sand-200);
+    font:inherit;font-size:14.5px;outline:none;background:#fff;
+  }
+  input:focus,select:focus{border-color:var(--em-500)}
+  .check{display:flex;align-items:center;gap:9px;font-size:14.5px;padding:6px 0;cursor:pointer}
+  .check input{width:17px;height:17px;accent-color:var(--em-500)}
+  .btn{background:var(--em-900);color:#fff;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:11px;border:none;cursor:pointer;margin-top:16px}
+  .btn:hover{background:var(--em-700)}
+  .btn.ghost{background:var(--sand-100);color:var(--em-900);border:1px solid var(--sand-200)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .note{background:var(--em-100);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--em-900);margin-top:16px}
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translate(-50%,80px);background:var(--em-900);
+    color:#fff;padding:12px 22px;border-radius:12px;font-size:14px;transition:transform .3s;z-index:9;
+  }
+  .toast.show{transform:translate(-50%,0)}
+  /* login */
+  #gate{max-width:380px;margin:12vh auto;background:#fff;border:1px solid var(--sand-200);border-radius:18px;padding:30px;text-align:center}
+  #gate .mark{background:var(--em-900);color:var(--sand-100);font-weight:700;padding:6px 12px;border-radius:9px;font-size:19px}
+  #gate h1{font-size:22px;margin:14px 0 4px}
+  #gate p{font-size:13.5px;color:var(--ink-soft);margin-bottom:16px}
+  #app{display:none}
+  /* tag corrections */
+  .tagrow{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+  .tagrow > div{flex:1;min-width:160px}
+  #tagPreview{display:none;margin-top:16px;gap:16px;align-items:start}
+  #tagPreview.show{display:flex;flex-wrap:wrap}
+  #tagPreview img{width:170px;height:128px;object-fit:cover;border-radius:12px;background:var(--sand-100)}
+  #tagPreview .cur{font-size:13.5px;color:var(--ink-soft)}
+  #tagPreview b{color:var(--em-900)}
+  .ovlist{margin-top:14px;font-size:13.5px}
+  .ovlist .ov{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--sand-100)}
+  .ovlist .ov button{margin-left:auto;color:#9C3B2E;background:none;border:none;cursor:pointer;font-weight:700}
+  textarea{width:100%;min-height:90px;border:1.5px solid var(--sand-200);border-radius:11px;padding:11px;font:12.5px/1.5 ui-monospace,monospace;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <span class="mark">WCD</span>
+  <h1>Marketplace Admin</h1>
+  <p>Enter the admin password to manage site settings.</p>
+  <input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+  <button class="btn" style="width:100%" onclick="login()">Sign in</button>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="wrap" style="padding:0 20px">
+      <span class="mark">WCD</span> <b>Marketplace Admin</b>
+      <a href="index.html">← Back to site</a>
+    </div>
+  </div>
+  <div class="wrap">
+
+    <div class="card">
+      <h2>Site text</h2>
+      <div class="sub">Headline copy on the marketplace homepage. Leave blank to keep the default.</div>
+      <label class="f">Hero title</label>
+      <input type="text" id="tHero" placeholder="Find the perfect surface, visually.">
+      <label class="f">Hero subtitle</label>
+      <input type="text" id="tSub" placeholder="Search the entire WCD catalogue the way designers think…">
+      <label class="f">Homepage section title</label>
+      <input type="text" id="tHome" placeholder="Fresh from the catalogue">
+    </div>
+
+    <div class="card">
+      <h2>PDF export</h2>
+      <div class="sub">Controls every PDF exported from moodboards or product selections.</div>
+      <label class="f">Title prefix (e.g. company name on top)</label>
+      <input type="text" id="pdfTitle" placeholder="WCD Trade">
+      <label class="f">Details to include for each design (one full-width row per design)</label>
+      <label class="check"><input type="checkbox" id="fType" checked> Product type</label>
+      <label class="check"><input type="checkbox" id="fCollection" checked> Collection</label>
+      <label class="check"><input type="checkbox" id="fRollsize" checked> Roll size</label>
+      <label class="check"><input type="checkbox" id="fBacking" checked> Backing</label>
+      <label class="check"><input type="checkbox" id="fPattern" checked> Pattern tag</label>
+      <label class="check"><input type="checkbox" id="fColours" checked> Colour tags + swatches</label>
+      <label class="check"><input type="checkbox" id="fStock" checked> Stock levels</label>
+      <label class="check"><input type="checkbox" id="fRoomimages" checked> Room photos beside each design</label>
+    </div>
+
+    <div class="card">
+      <h2>Tag corrections</h2>
+      <div class="sub">Spot a wrong pattern tag? Fix it here — the site updates instantly on this computer.</div>
+      <div class="tagrow">
+        <div style="flex:2">
+          <label class="f">SKU</label>
+          <input type="text" id="tagSku" placeholder="e.g. CRISPY 526325" onkeydown="if(event.key==='Enter')loadSku()">
+        </div>
+        <button class="btn ghost" style="margin-top:0" onclick="loadSku()">Load</button>
+      </div>
+      <div id="tagPreview">
+        <img id="tagImg" alt="">
+        <div style="flex:1;min-width:220px">
+          <div class="cur">Current tag: <b id="tagCur">—</b></div>
+          <label class="f">Correct pattern</label>
+          <select id="tagNew"></select>
+          <button class="btn" onclick="saveTag()">Save correction</button>
+        </div>
+      </div>
+      <div class="ovlist" id="ovList"></div>
+      <div class="note">Corrections apply to the website immediately. To bake them into the recommendation
+        engine permanently (so similar-product matching also updates), copy the box below and give it to
+        Claude — it merges into <b>engine/data/pattern_overrides.json</b> and re-runs the tagger.</div>
+      <textarea id="ovJson" readonly onclick="this.select()"></textarea>
+    </div>
+
+    <button class="btn" style="width:100%;font-size:16px" onclick="saveAll()">Save all settings</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PW = "WCD-Market-2026";   /* marketplace admin — deliberately different from the staff app password */
+function login(){
+  if(document.getElementById("pw").value === PW){
+    sessionStorage.setItem("wcd_admin", "1");
+    boot();
+  } else toast("Wrong password");
+}
+let toastTimer;
+function toast(m){
+  const t = document.getElementById("toast");
+  t.textContent = m; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+
+const S = Object.assign(
+  {titles:{}, pdf:{title:"", cols:2, fields:{type:true,collection:true,rollsize:true,pattern:true,colours:true,stock:true}}},
+  JSON.parse(localStorage.getItem("wcd_site_settings") || "{}"));
+let OV = JSON.parse(localStorage.getItem("wcd_tag_overrides") || "{}");
+let CATALOG = null, PATTERNS = [];
+
+function boot(){
+  if(sessionStorage.getItem("wcd_admin") !== "1") return;
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  document.getElementById("tHero").value = S.titles.hero || "";
+  document.getElementById("tSub").value = S.titles.sub || "";
+  document.getElementById("tHome").value = S.titles.homeSec || "";
+  document.getElementById("pdfTitle").value = S.pdf.title || "";
+  for(const [k, id] of Object.entries({type:"fType",collection:"fCollection",rollsize:"fRollsize",backing:"fBacking",pattern:"fPattern",colours:"fColours",stock:"fStock",roomimages:"fRoomimages"}))
+    document.getElementById(id).checked = S.pdf.fields[k] !== false;
+  fetch("products.json?v=" + Date.now()).then(r=>r.json()).then(d => {
+    CATALOG = new Map(d.products.map(p=>[p.sku.toUpperCase(), p]));
+    PATTERNS = [...new Set(d.products.map(p=>p.p).filter(Boolean))].sort();
+    document.getElementById("tagNew").innerHTML = PATTERNS.map(p=>`<option>${p}</option>`).join("");
+    renderOv();
+  });
+}
+function loadSku(){
+  const sku = document.getElementById("tagSku").value.trim().toUpperCase();
+  const p = CATALOG && CATALOG.get(sku);
+  if(!p){ toast("SKU not found on the site"); return; }
+  document.getElementById("tagPreview").classList.add("show");
+  document.getElementById("tagImg").src = p.i;
+  document.getElementById("tagCur").textContent = OV[p.sku] ? `${OV[p.sku]} (corrected)` : (p.p || "untagged");
+  document.getElementById("tagNew").value = OV[p.sku] || p.p || PATTERNS[0];
+  document.getElementById("tagNew").dataset.sku = p.sku;
+}
+function saveTag(){
+  const sku = document.getElementById("tagNew").dataset.sku;
+  if(!sku) return;
+  OV[sku] = document.getElementById("tagNew").value;
+  localStorage.setItem("wcd_tag_overrides", JSON.stringify(OV));
+  renderOv(); toast(`${sku} → ${OV[sku]} saved`);
+  document.getElementById("tagCur").textContent = `${OV[sku]} (corrected)`;
+}
+function renderOv(){
+  const el = document.getElementById("ovList");
+  const entries = Object.entries(OV);
+  el.innerHTML = entries.length
+    ? "<b>Saved corrections:</b>" + entries.map(([s,p]) =>
+        `<div class="ov">${s} → <b>${p}</b><button onclick="dropOv('${s.replace(/'/g,"\\'")}')">remove</button></div>`).join("")
+    : "";
+  document.getElementById("ovJson").value = entries.length ? JSON.stringify(OV, null, 1) : "";
+}
+function dropOv(sku){
+  delete OV[sku];
+  localStorage.setItem("wcd_tag_overrides", JSON.stringify(OV));
+  renderOv();
+}
+function saveAll(){
+  S.titles = {
+    hero: document.getElementById("tHero").value.trim(),
+    sub: document.getElementById("tSub").value.trim(),
+    homeSec: document.getElementById("tHome").value.trim(),
+  };
+  S.pdf.title = document.getElementById("pdfTitle").value.trim();
+  S.pdf.fields = {
+    type: document.getElementById("fType").checked,
+    collection: document.getElementById("fCollection").checked,
+    rollsize: document.getElementById("fRollsize").checked,
+    backing: document.getElementById("fBacking").checked,
+    pattern: document.getElementById("fPattern").checked,
+    colours: document.getElementById("fColours").checked,
+    stock: document.getElementById("fStock").checked,
+    roomimages: document.getElementById("fRoomimages").checked,
+  };
+  localStorage.setItem("wcd_site_settings", JSON.stringify(S));
+  toast("Saved — refresh the marketplace to see it");
+}
+if(sessionStorage.getItem("wcd_admin") === "1") boot();
+</script>
+</body>
+</html>
